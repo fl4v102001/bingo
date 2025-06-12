@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio de números</title>
+    <style>
+        /* --- Estilos Gerais e Fontes --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap');
+
+        /* --- Variáveis de Cor --- */
+        :root {
+            /* Tema Claro (Padrão) */
+            --bg-page: #f8f7fa;
+            --bg-container: #fcfaff;
+            --bg-input: #fff;
+            --bg-circle: #e9e9ed;
+            --circle-large-bg-color: #e9e9ed; /* Cor específica para o fundo do círculo maior */
+            --circle-large-font-color: #3d3d4e; /* Cor específica para a fonte do círculo maior */
+            --text-primary: #333;
+            --text-secondary: #3d3d4e;
+            --text-label: #6c567b;
+            --text-placeholder: #b0b0b0; /* Cor unificada para placeholders */
+            --border-color: #e0dbe1; /* Cor para bordas internas */
+            --main-container-border-color: #e0dbe1; /* Cor específica para a borda principal */
+            --shadow-color: rgba(0,0,0,0.05);
+
+            /* Cores do Brilho */
+            --primary-glow-color: #FFD700;
+            --secondary-glow-color: #FFFDE7;
+        }
+
+        :root.dark-theme {
+            /* Tema Escuro */
+            --bg-page: #121212;
+            --bg-container: #1e1e1e;
+            --bg-input: #2c2c2c;
+            --bg-circle: #333333;
+            --circle-large-bg-color: #333333; /* Cor específica para o fundo do círculo maior */
+            --circle-large-font-color: #f0f0f0; /* Cor específica para a fonte do círculo maior */
+            --text-primary: #e0e0e0;
+            --text-secondary: #f0f0f0;
+            --text-label: #adadc2;
+            --border-color: #444444; /* Cor para bordas internas */
+            --main-container-border-color: #444444; /* Cor específica para a borda principal */
+            --shadow-color: rgba(255,255,255,0.05);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* --- Container Principal --- */
+        .main-container {
+            width: 95%;
+            max-width: 1600px;
+            margin: 2rem auto;
+            border: 10px solid var(--main-container-border-color); /* Borda alterada */
+            background-color: var(--bg-container);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 4rem);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        /* --- Seção Superior --- */
+        .top-section {
+            background-color: transparent;
+            /* border-bottom: 1px solid var(--border-color); */ /* Removido */
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* --- Controles do Topo (Tema e Cor) --- */
+        .top-controls {
+            position: absolute;
+            top: 0.2rem;
+            right: 0.2rem;
+            display: grid;
+            grid-template-columns: repeat(2, auto);
+            gap: 0.30rem;
+        }
+
+        /* --- Botão de Tema --- */
+        .theme-toggle-btn {
+            background-color: var(--bg-circle);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        /* --- Seletor de Cor --- */
+        .color-picker {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+        .color-picker::-webkit-color-swatch {
+            border-radius: 50%;
+            border: 2px solid var(--text-placeholder);
+        }
+        .color-picker::-moz-color-swatch {
+            border-radius: 50%;
+            border: 2px solid var(--text-placeholder);
+        }
+
+
+        /* --- Seção dos Círculos --- */
+        .circles-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4rem; 
+            padding: 5rem 2rem;
+            flex-grow: 1;
+            flex-wrap: wrap;
+            background-color: transparent;
+        }
+
+        .circle {
+            background-color: var(--bg-circle);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-secondary);
+            font-weight: 700;
+            text-align: center;
+            overflow-wrap: break-word;
+            word-break: break-all;
+            padding: 1rem;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        
+        #circle-large {
+            width: 320px;
+            height: 320px;
+            font-size: 8.8rem;
+            box-shadow: 0 0 15px var(--secondary-glow-color), 0 0 30px var(--secondary-glow-color), 0 0 45px var(--primary-glow-color), 0 0 60px var(--primary-glow-color);
+            animation: pulse-glow-gold 0.5s infinite alternate;
+            background-color: var(--circle-large-bg-color); /* Usa a variável específica */
+            color: var(--circle-large-font-color); /* Usa a variável específica */
+        }
+
+        #circle-medium { width: 285px; height: 285px; font-size: 7.8rem; }
+        #circle-small { width: 220px; height: 220px; font-size: 6rem; }
+
+        @keyframes pulse-glow-gold {
+            from {
+                box-shadow: 0 0 10px #fff9c4, 0 0 20px #fff9c4, 0 0 30px #ffecb3, 0 0 40px #ffecb3;
+            }
+            to {
+                box-shadow: 0 0 20px var(--secondary-glow-color), 0 0 35px var(--secondary-glow-color), 0 0 50px var(--primary-glow-color), 0 0 65px var(--primary-glow-color);
+            }
+        }
+        
+        #single-line-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 3rem;
+            color: var(--text-primary);
+            font-weight: 300;
+            height: 60px;
+            box-sizing: border-box;
+        }
+        
+        #single-line-input::placeholder,
+        #multi-line-input::placeholder {
+             color: var(--text-placeholder);
+        }
+
+        /* --- Seção Inferior --- */
+        .bottom-section {
+             /* border-top: 1px solid var(--border-color); */ /* Removido */
+        }
+
+        .input-wrapper {
+            padding: 1rem 1.5rem;
+        }
+
+        .input-wrapper label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-label);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        #multi-line-input {
+            width: 100%;
+            height: 9.6rem;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            resize: vertical;
+            box-sizing: border-box;
+            font-size: 2.4rem;
+            line-height: 1.2;
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+        }
+        
+        #multi-line-input:focus {
+            outline: none;
+            border-color: var(--main-container-border-color);
+        }
+        
+        /* --- DESIGN RESPONSIVO --- */
+
+        /* AJUSTE PARA TELAS GRANDES */
+        @media (min-width: 1401px) {
+            .circles-container { padding: 1rem; margin: 1rem; gap: 4rem; } 
+            #circle-large { width: 500px; height: 500px; font-size: 20rem; } 
+            #circle-medium { width: 340px; height: 340px; font-size: 10rem; } 
+            #circle-small { width: 260px; height: 260px; font-size: 8rem; } 
+        }
+        
+        /* AJUSTE PARA TABLETS */
+        @media (max-width: 768px) {
+            .main-container { margin: 1rem auto; width: 95%; min-height: calc(100vh - 2rem); }
+            .circles-container { padding: 3rem 1rem; gap: 2rem; }
+            #circle-large { width: 220px; height: 220px; font-size: 6rem; }
+            #circle-medium { width: 180px; height: 180px; font-size: 4.5rem; }
+            #circle-small { width: 140px; height: 140px; font-size: 3.5rem; }
+            #single-line-input { font-size: 2rem; }
+            #multi-line-input { height: 7.6rem; font-size: 1.8rem; } 
+        }
+
+        /* Proporcionalidade ajustada para CELULARES */
+        @media (max-width: 480px) {
+            .top-section { padding-right: 4.5rem; } 
+            .input-wrapper { padding: 1rem; }
+            .top-controls { 
+                right: 0.5rem; 
+                gap: 0.75rem;
+                grid-template-columns: auto; /* Volta para uma coluna */
+                justify-items: end;
+            }
+            .circles-container { flex-direction: column; gap: 2.5rem; }
+            #circle-large { width: 220px; height: 220px; font-size: 5.8rem; }
+            #circle-medium { width: 195px; height: 195px; font-size: 5.2rem; }
+            #circle-small { width: 150px; height: 150px; font-size: 4rem; }
+            #single-line-input { font-size: 1.8rem; }
+            #multi-line-input { height: 6.4rem; font-size: 1.5rem; } 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- Seção Superior -->
+        <header class="top-section">
+            <input type="text" id="single-line-input" placeholder="Digite uma mensagem importante">
+            <div class="top-controls">
+                <input type="color" id="border-color-picker" class="color-picker" title="Mudar cor da borda">
+                <input type="color" id="circle-large-color-picker" class="color-picker" title="Mudar cor do fundo do círculo">
+                <input type="color" id="circle-large-font-color-picker" class="color-picker" title="Mudar cor da fonte do círculo">
+                <button id="theme-toggle" class="theme-toggle-btn">🌙</button>
+            </div>
+        </header>
+
+        <!-- Seção dos Círculos -->
+        <main class="circles-container">
+            <div class="circle" id="circle-large"></div>
+            <div class="circle" id="circle-medium"></div>
+            <div class="circle" id="circle-small"></div>
+        </main>
+        
+        <!-- Seção Inferior -->
+        <footer class="bottom-section">
+             <div class="input-wrapper">
+                <label for="multi-line-input">Números</label>
+                <textarea id="multi-line-input" placeholder="Digite os números sorteados"></textarea>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // --- Seleção de Elementos do DOM ---
+        const textArea = document.getElementById('multi-line-input');
+        const largeCircle = document.getElementById('circle-large');
+        const mediumCircle = document.getElementById('circle-medium');
+        const smallCircle = document.getElementById('circle-small');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const borderColorPicker = document.getElementById('border-color-picker');
+        const circleLargeColorPicker = document.getElementById('circle-large-color-picker');
+        const circleLargeFontColorPicker = document.getElementById('circle-large-font-color-picker');
+        const root = document.documentElement;
+        
+        // --- Lógica dos Círculos ---
+        textArea.addEventListener('input', () => {
+            const words = textArea.value.trim().split(/\s+/).filter(word => word.length > 0);
+            const lastWord = words[words.length - 1] || '';
+            const secondLastWord = words[words.length - 2] || '';
+            const thirdLastWord = words[words.length - 3] || '';
+
+            largeCircle.textContent = lastWord;
+            mediumCircle.textContent = secondLastWord;
+            smallCircle.textContent = thirdLastWord;
+        });
+
+        // --- Lógica do Tema Claro/Escuro e Cores ---
+        
+        const defaultBorderColors = { light: '#e0dbe1', dark: '#444444' };
+        const defaultCircleLargeBgColors = { light: '#e9e9ed', dark: '#333333' };
+        const defaultCircleLargeFontColors = { light: '#3d3d4e', dark: '#f0f0f0' };
+
+        function applyThemeAndColor() {
+            const theme = localStorage.getItem('theme') || 'light';
+            root.classList.toggle('dark-theme', theme === 'dark');
+            themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+
+            // Aplica cor da borda
+            const borderColorKey = `customBorderColor_${theme}`;
+            const savedBorderColor = localStorage.getItem(borderColorKey);
+            const finalBorderColor = savedBorderColor || defaultBorderColors[theme];
+            root.style.setProperty('--main-container-border-color', finalBorderColor);
+            borderColorPicker.value = finalBorderColor;
+            
+            // Aplica cor do fundo do círculo maior
+            const circleBgColorKey = `customCircleLargeBgColor_${theme}`;
+            const savedCircleBgColor = localStorage.getItem(circleBgColorKey);
+            const finalCircleBgColor = savedCircleBgColor || defaultCircleLargeBgColors[theme];
+            root.style.setProperty('--circle-large-bg-color', finalCircleBgColor);
+            circleLargeColorPicker.value = finalCircleBgColor;
+            
+            // Aplica cor da fonte do círculo maior
+            const fontColorKey = `customCircleLargeFontColor_${theme}`;
+            const savedFontColor = localStorage.getItem(fontColorKey);
+            const finalFontColor = savedFontColor || defaultCircleLargeFontColors[theme];
+            root.style.setProperty('--circle-large-font-color', finalFontColor);
+            circleLargeFontColorPicker.value = finalFontColor;
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            applyThemeAndColor();
+        });
+
+        borderColorPicker.addEventListener('input', (event) => {
+            const newColor = event.target.value;
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            const colorKey = `customBorderColor_${currentTheme}`;
+            
+            root.style.setProperty('--main-container-border-color', newColor);
+            localStorage.setItem(colorKey, newColor);
+        });
+        
+        circleLargeColorPicker.addEventListener('input', (event) => {
+            const newColor = event.target.value;
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            const colorKey = `customCircleLargeBgColor_${currentTheme}`;
+            
+            root.style.setProperty('--circle-large-bg-color', newColor);
+            localStorage.setItem(colorKey, newColor);
+        });
+        
+        circleLargeFontColorPicker.addEventListener('input', (event) => {
+            const newColor = event.target.value;
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            const colorKey = `customCircleLargeFontColor_${currentTheme}`;
+            
+            root.style.setProperty('--circle-large-font-color', newColor);
+            localStorage.setItem(colorKey, newColor);
+        });
+
+        // Verifica as preferências salvas no carregamento da página
+        document.addEventListener('DOMContentLoaded', () => {
+            applyThemeAndColor();
+        });
+
+    </script>
+
+</body>
+</html>
