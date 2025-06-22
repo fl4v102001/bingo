@@ -122,8 +122,8 @@
         /* --- Seção dos Círculos --- */
         .circles-container {
             display: flex;
-            justify-content: space-evenly;
-            align-items: self-end;
+            justify-content: center;
+            align-items: flex-end;
             gap: 4rem; 
             padding: 5rem 2rem;
             flex-grow: 1;
@@ -171,29 +171,49 @@
         
         .floating-badge {
             position: absolute;
-            bottom: 0;
+            bottom: -2rem; /* Alinha todos na mesma base vertical */
             right: 0;
-            width: 80px;
-            height: 80px;
+            transform: translateX(15%);
             background-color: transparent;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            font-family: 'Roboto Slab', serif;
+            font-weight: 700;
+            z-index: 10;
+            padding: 0;
+            box-sizing: border-box;
+            transition: color 0.3s ease;
+            line-height: 0.8; /* Ajuda no alinhamento da base do texto */
+        }
+        
+        #badge-large {
+            width: 100px;
+            height: 100px;
             color: var(--circle-large-bg-color);
             -webkit-text-stroke: 2px var(--circle-large-font-color);
             text-stroke: 2px var(--circle-large-font-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Roboto Slab', serif;
-            font-size: 4.7rem; /* Aumentado em 25% */
-            font-weight: 700;
-            z-index: 10;
-            transform: translate(20%, 20%);
-            overflow: hidden;
-            padding: 0.25rem;
-            box-sizing: border-box;
-            transition: color 0.3s ease;
+            font-size: 8rem;
             text-shadow: 0 0 8px var(--secondary-glow-color), 0 0 12px var(--secondary-glow-color), 0 0 16px var(--primary-glow-color), 0 0 20px var(--primary-glow-color);
         }
 
+        #badge-medium {
+            width: 70px;
+            height: 70px;
+            color: var(--bg-circle);
+            -webkit-text-stroke: 2px var(--text-placeholder);
+            text-stroke: 2px var(--text-placeholder);
+            font-size: 4.1rem;
+        }
+
+        #badge-small {
+            width: 60px;
+            height: 60px;
+            color: var(--bg-circle);
+            -webkit-text-stroke: 2px var(--text-placeholder);
+            text-stroke: 2px var(--text-placeholder);
+            font-size: 3.5rem;
+        }
         
         #single-line-input {
             width: 100%;
@@ -345,21 +365,24 @@
 
         /* TELAS GRANDES (3 círculos) */
         @media (min-width: 1401px) {
-            .circles-container { padding: 1rem; margin: 0rem; gap: 4rem; } 
+            .circles-container { padding: 1rem; margin: 0rem 1rem; justify-content: space-between; } 
             #circle-large { width: 660px; height: 660px; font-size: 26rem; } 
             #circle-medium { width: 340px; height: 340px; font-size: 12rem; display: flex; } 
             #circle-small { width: 260px; height: 260px; font-size: 9rem; display: flex; } 
-            .floating-badge { width: 130px; height: 130px; font-size: 9.375rem; }
+            #badge-large { width: 130px; height: 130px; font-size: 15.86rem; }
+            #badge-medium { width: 110px; height: 110px; font-size: 7.5rem; }
+            #badge-small { width: 90px; height: 90px; font-size: 6rem; }
         }
         
         /* TELAS MÉDIAS (2 círculos) */
         @media (min-width: 769px) and (max-width: 1400px) {
             .main-container { width: 95%; }
-            .circles-container { gap: 2.5rem; }
+            .circles-container { justify-content: space-evenly; }
             #circle-large { width: 500px; height: 500px; font-size: 20rem; }
             #circle-medium { width: 250px; height: 250px; font-size: 8rem; display: flex; }
-            #circle-small { display: none; } /* Esconde o círculo pequeno */
-            .floating-badge { width: 100px; height: 100px; font-size: 7.5rem; }
+            .circle-wrapper:has(#circle-small) { display: none; }
+            #badge-large { width: 100px; height: 100px; font-size: 12.675rem; }
+            #badge-medium { width: 80px; height: 80px; font-size: 5rem; }
         }
 
         /* TELAS PEQUENAS (1 círculo) */
@@ -367,9 +390,9 @@
             .main-container { width: 95%; }
             .circles-container { flex-direction: column; gap: 2.5rem; justify-content: center;}
             #circle-large { width: 90vw; max-width: 400px; height: 90vw; max-height: 400px; font-size: 15vw; }
-            #circle-medium, #circle-small { display: none; } /* Esconde os outros círculos */
+            .circle-wrapper:has(#circle-medium), .circle-wrapper:has(#circle-small) { display: none; }
             .input-wrapper { flex-direction: column; align-items: stretch; gap: 1.5rem; }
-            .floating-badge { width: 20vw; max-width: 80px; height: 20vw; max-height: 80px; font-size: 15vw; max-font-size: 6.5rem; }
+            #badge-large { width: 20vw; max-width: 80px; height: 20vw; max-height: 80px; font-size: 25.35vw; max-font-size: 8.5rem; }
         }
         
         /* --- Animações --- */
@@ -396,10 +419,16 @@
         <main class="circles-container">
             <div class="circle-wrapper">
                 <div class="circle" id="circle-large"></div>
-                <div class="floating-badge"> </div>
+                <div class="floating-badge" id="badge-large"> </div>
             </div>
-            <div class="circle" id="circle-medium"></div>
-            <div class="circle" id="circle-small"></div>
+            <div class="circle-wrapper">
+                <div class="circle" id="circle-medium"></div>
+                <div class="floating-badge" id="badge-medium"> </div>
+            </div>
+            <div class="circle-wrapper">
+                <div class="circle" id="circle-small"></div>
+                <div class="floating-badge" id="badge-small"> </div>
+            </div>
         </main>
         
         <!-- Seção Inferior -->
@@ -443,13 +472,27 @@
         const circleLargeColorPicker = document.getElementById('circle-large-color-picker');
         const circleLargeFontColorPicker = document.getElementById('circle-large-font-color-picker');
         const root = document.documentElement;
-        const floatingBadge = document.querySelector('.floating-badge');
+        const badgeLarge = document.getElementById('badge-large');
+        const badgeMedium = document.getElementById('badge-medium');
+        const badgeSmall = document.getElementById('badge-small');
         const showSortedBtn = document.getElementById('show-sorted-btn');
         const sortedModal = document.getElementById('sorted-modal');
         const modalCloseBtn = document.getElementById('modal-close-btn');
         const sortedTableBody = document.querySelector('#sorted-table tbody');
         
         // --- Lógica dos Círculos ---
+        function getBingoLetter(word) {
+            if (word && /^\d+$/.test(word)) {
+                const num = parseInt(word, 10);
+                if (num <= 15) return 'B';
+                if (num <= 30) return 'I';
+                if (num <= 45) return 'N';
+                if (num <= 60) return 'G';
+                if (num >= 61) return 'O';
+            }
+            return ' ';
+        }
+
         textArea.addEventListener('input', () => {
             const words = textArea.value.trim().split(/\s+/).filter(word => word.length > 0);
             const lastWord = words[words.length - 1] || '';
@@ -460,23 +503,9 @@
             mediumCircle.textContent = secondLastWord;
             smallCircle.textContent = thirdLastWord;
             
-            // Lógica para o círculo flutuante
-            if (lastWord && /^\d+$/.test(lastWord)) {
-                const num = parseInt(lastWord, 10);
-                if (num <= 15) {
-                    floatingBadge.textContent = 'B';
-                } else if (num >= 16 && num <= 30) {
-                    floatingBadge.textContent = 'I';
-                } else if (num >= 31 && num <= 45) {
-                    floatingBadge.textContent = 'N';
-                } else if (num >= 46 && num <= 60) {
-                    floatingBadge.textContent = 'G';
-                } else if (num >= 61) {
-                    floatingBadge.textContent = 'O';
-                }
-            } else {
-                floatingBadge.textContent = ' ';
-            }
+            badgeLarge.textContent = getBingoLetter(lastWord);
+            badgeMedium.textContent = getBingoLetter(secondLastWord);
+            badgeSmall.textContent = getBingoLetter(thirdLastWord);
         });
 
         // --- Lógica do Tema Claro/Escuro e Cores ---
