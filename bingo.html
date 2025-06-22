@@ -6,7 +6,7 @@
     <title>Sorteio de números</title>
     <style>
         /* --- Estilos Gerais e Fontes --- */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Roboto+Slab:wght@700&display=swap');
 
         /* --- Variáveis de Cor --- */
         :root {
@@ -122,8 +122,8 @@
         /* --- Seção dos Círculos --- */
         .circles-container {
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: space-evenly;
+            align-items: self-end;
             gap: 4rem; 
             padding: 5rem 2rem;
             flex-grow: 1;
@@ -161,33 +161,37 @@
             background-color: var(--circle-large-bg-color); /* Usa a variável específica */
             color: var(--circle-large-font-color); /* Usa a variável específica */
         }
+        
+        #circle-medium, #circle-small {
+            color: var(--text-placeholder);
+        }
 
         #circle-medium { width: 285px; height: 285px; font-size: 7.8rem; }
         #circle-small { width: 220px; height: 220px; font-size: 6rem; }
         
         .floating-badge {
             position: absolute;
-            top: 0;
+            bottom: 0;
             right: 0;
             width: 80px;
             height: 80px;
-            background-color: var(--circle-large-bg-color);
-            color: var(--circle-large-font-color);
-            border-radius: 50%;
+            background-color: transparent;
+            color: var(--circle-large-bg-color);
+            -webkit-text-stroke: 2px var(--circle-large-font-color);
+            text-stroke: 2px var(--circle-large-font-color);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
+            font-family: 'Roboto Slab', serif;
+            font-size: 4.7rem; /* Aumentado em 25% */
             font-weight: 700;
             z-index: 10;
-            transform: translate(20%, -20%);
-            box-shadow: 0 0 8px var(--secondary-glow-color), 0 0 12px var(--secondary-glow-color), 0 0 16px var(--primary-glow-color), 0 0 20px var(--primary-glow-color);
-            animation: pulse-glow-gold 0.5s infinite alternate;
-            border: 3px solid var(--bg-container);
+            transform: translate(20%, 20%);
             overflow: hidden;
             padding: 0.25rem;
             box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s ease;
+            transition: color 0.3s ease;
+            text-shadow: 0 0 8px var(--secondary-glow-color), 0 0 12px var(--secondary-glow-color), 0 0 16px var(--primary-glow-color), 0 0 20px var(--primary-glow-color);
         }
 
         
@@ -224,13 +228,6 @@
         .textarea-container {
             flex-grow: 1;
         }
-
-        .input-wrapper label {
-            display: block;
-            font-size: 0.9rem;
-            color: var(--text-label);
-            font-weight: 500;
-        }
         
         #multi-line-input {
             width: 100%;
@@ -258,35 +255,121 @@
             align-items: center; /* Adicionado */
         }
         
+        .numbers-btn {
+            background-color: var(--bg-circle);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; /* Inicia escondido */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .modal-content {
+            background-color: var(--bg-container);
+            color: var(--text-primary);
+            padding: 1rem;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 95%;
+            height: 90vh; /* Ocupa 90% da altura da tela */
+            display: flex; /* Adicionado */
+            flex-direction: column; /* Adicionado */
+            position: relative;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-placeholder);
+        }
+        
+        #sorted-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            flex-grow: 1; /* Adicionado para a tabela crescer */
+            display: flex; /* Adicionado */
+            flex-direction: column; /* Adicionado */
+        }
+        #sorted-table thead, #sorted-table tbody {
+            display: block;
+        }
+        #sorted-table tbody {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: block;
+        }
+        #sorted-table tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        #sorted-table th, #sorted-table td {
+            border: 1px solid var(--border-color);
+            padding: 0rem;
+            font-size: 2.4rem; /* Aumentado em 20% */
+        }
+        #sorted-table th {
+            background-color: var(--circle-large-bg-color);
+            color: var(--circle-large-font-color);
+            font-family: 'Roboto Slab', serif;
+        }
+        #sorted-table td {
+            background-color: #fcfaff; /* Cor de fundo do tema claro */
+            color: #333; /* Cor da fonte do tema claro */
+            height: calc(85vh / 15); /* Distribui a altura */
+        }
+        
         /* --- DESIGN RESPONSIVO --- */
 
         /* TELAS GRANDES (3 círculos) */
         @media (min-width: 1401px) {
-            .circles-container { padding: 1rem; margin: 1rem; gap: 4rem; } 
+            .circles-container { padding: 1rem; margin: 0rem; gap: 4rem; } 
             #circle-large { width: 660px; height: 660px; font-size: 26rem; } 
             #circle-medium { width: 340px; height: 340px; font-size: 12rem; display: flex; } 
             #circle-small { width: 260px; height: 260px; font-size: 9rem; display: flex; } 
-            .floating-badge { width: 130px; height: 130px; font-size: 5rem; }
+            .floating-badge { width: 130px; height: 130px; font-size: 9.375rem; }
         }
         
         /* TELAS MÉDIAS (2 círculos) */
         @media (min-width: 769px) and (max-width: 1400px) {
             .main-container { width: 95%; }
-            .circles-container { flex-direction: row; gap: 2.5rem; }
+            .circles-container { gap: 2.5rem; }
             #circle-large { width: 500px; height: 500px; font-size: 20rem; }
             #circle-medium { width: 250px; height: 250px; font-size: 8rem; display: flex; }
             #circle-small { display: none; } /* Esconde o círculo pequeno */
-            .floating-badge { width: 100px; height: 100px; font-size: 4rem; }
+            .floating-badge { width: 100px; height: 100px; font-size: 7.5rem; }
         }
 
         /* TELAS PEQUENAS (1 círculo) */
         @media (max-width: 768px) {
             .main-container { width: 95%; }
-            .circles-container { flex-direction: column; gap: 2.5rem; }
+            .circles-container { flex-direction: column; gap: 2.5rem; justify-content: center;}
             #circle-large { width: 90vw; max-width: 400px; height: 90vw; max-height: 400px; font-size: 15vw; }
             #circle-medium, #circle-small { display: none; } /* Esconde os outros círculos */
             .input-wrapper { flex-direction: column; align-items: stretch; gap: 1.5rem; }
-            .floating-badge { width: 20vw; max-width: 80px; height: 20vw; max-height: 80px; font-size: 8vw; max-font-size: 3.5rem; }
+            .floating-badge { width: 20vw; max-width: 80px; height: 20vw; max-height: 80px; font-size: 15vw; max-font-size: 6.5rem; }
         }
         
         /* --- Animações --- */
@@ -313,7 +396,7 @@
         <main class="circles-container">
             <div class="circle-wrapper">
                 <div class="circle" id="circle-large"></div>
-                <div class="floating-badge">#</div>
+                <div class="floating-badge"> </div>
             </div>
             <div class="circle" id="circle-medium"></div>
             <div class="circle" id="circle-small"></div>
@@ -323,7 +406,7 @@
         <footer class="bottom-section">
              <div class="input-wrapper">
                 <div class="textarea-container">
-                    <label for="multi-line-input">Números</label>
+                    <button class="numbers-btn" id="show-sorted-btn">Números</button>
                     <textarea id="multi-line-input" placeholder="Digite os números sorteados"></textarea>
                 </div>
                 <div class="bottom-controls">
@@ -334,6 +417,19 @@
                 </div>
             </div>
         </footer>
+    </div>
+    
+    <!-- Modal de Conteúdo Ordenado -->
+    <div id="sorted-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+            <table id="sorted-table">
+                <thead>
+                    <tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
     <script>
@@ -348,6 +444,10 @@
         const circleLargeFontColorPicker = document.getElementById('circle-large-font-color-picker');
         const root = document.documentElement;
         const floatingBadge = document.querySelector('.floating-badge');
+        const showSortedBtn = document.getElementById('show-sorted-btn');
+        const sortedModal = document.getElementById('sorted-modal');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const sortedTableBody = document.querySelector('#sorted-table tbody');
         
         // --- Lógica dos Círculos ---
         textArea.addEventListener('input', () => {
@@ -403,7 +503,6 @@
             const finalCircleBgColor = savedCircleBgColor || defaultCircleLargeBgColors[theme];
             root.style.setProperty('--circle-large-bg-color', finalCircleBgColor);
             circleLargeColorPicker.value = finalCircleBgColor;
-            // ATUALIZA A COR DO BRILHO PRINCIPAL
             root.style.setProperty('--primary-glow-color', finalCircleBgColor);
             
             // Aplica cor da fonte do círculo maior
@@ -447,6 +546,58 @@
             
             root.style.setProperty('--circle-large-font-color', newColor);
             localStorage.setItem(colorKey, newColor);
+        });
+
+        // --- Lógica do Modal ---
+        showSortedBtn.addEventListener('click', () => {
+            const items = textArea.value.trim().split(/\s+/).filter(item => item.length > 0);
+            const allNumbers = items.filter(item => !isNaN(parseFloat(item)) && isFinite(item)).map(Number);
+            
+            const b_col = allNumbers.filter(n => n >= 1 && n <= 15).sort((a,b) => a-b);
+            const i_col = allNumbers.filter(n => n >= 16 && n <= 30).sort((a,b) => a-b);
+            const n_col = allNumbers.filter(n => n >= 31 && n <= 45).sort((a,b) => a-b);
+            const g_col = allNumbers.filter(n => n >= 46 && n <= 60).sort((a,b) => a-b);
+            const o_col = allNumbers.filter(n => n >= 61 && n <= 75).sort((a,b) => a-b);
+
+            sortedTableBody.innerHTML = ''; // Limpa a tabela
+
+            for (let i = 0; i < 15; i++) {
+                const row = document.createElement('tr');
+                
+                const cellB = document.createElement('td');
+                cellB.textContent = b_col[i] || '';
+                row.appendChild(cellB);
+                
+                const cellI = document.createElement('td');
+                cellI.textContent = i_col[i] || '';
+                row.appendChild(cellI);
+                
+                const cellN = document.createElement('td');
+                cellN.textContent = n_col[i] || '';
+                row.appendChild(cellN);
+                
+                const cellG = document.createElement('td');
+                cellG.textContent = g_col[i] || '';
+                row.appendChild(cellG);
+
+                const cellO = document.createElement('td');
+                cellO.textContent = o_col[i] || '';
+                row.appendChild(cellO);
+                
+                sortedTableBody.appendChild(row);
+            }
+            
+            sortedModal.style.display = 'flex';
+        });
+
+        modalCloseBtn.addEventListener('click', () => {
+            sortedModal.style.display = 'none';
+        });
+        
+        sortedModal.addEventListener('click', (event) => {
+            if(event.target === sortedModal) {
+                sortedModal.style.display = 'none';
+            }
         });
 
         // Verifica as preferências salvas no carregamento da página
