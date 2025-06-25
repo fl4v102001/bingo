@@ -1,0 +1,51 @@
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class AutoRefreshApp(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/':
+            try:
+                with open("text.txt", "r") as f:
+                    content = f.read()
+            except FileNotFoundError:
+                content = "(file not found)"
+            html = f'''
+            <html>
+            <head>
+                <meta http-equiv="refresh" content="5">
+            </head>
+            <body>
+                <pre>{content}</pre>
+            </body>
+            </html>
+            '''
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.send_header("Access-Control-Allow-Origin", "*")  # Permite qualquer origem
+            self.end_headers()
+            self.wfile.write(html.encode())
+        else:
+            self.send_error(404, "Not Found")
+
+    def do_POST(self):
+        length = int(self.headers.get('Content-Length', 0))
+        body = self.rfile.read(length).decode()
+
+        if self.path == '/update':
+            with open("text.txt", "w") as f:
+                f.write(body)
+            self.send_response(204)
+            self.send_header("Access-Control-Allow-Origin", "*")  # Permite qualquer origem
+            self.end_headers()
+        else:
+            self.send_error(404, "Not Found")
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
+
+if __name__ == "__main__":
+    print("Servidor rodando em http://0.0.0.0:8000 ... (Ctrl+C para parar)")
+    HTTPServer(('0.0.0.0', 8000), AutoRefreshApp).serve_forever()
