@@ -5,6 +5,8 @@ App em HTML para acompanhar sorteio de bingos
 
 Este projeto é uma aplicação web interativa desenvolvida em **HTML5**, **CSS3** e **JavaScript puro** (sem frameworks), com foco em experiência visual e personalização de tema.
 
+A v2 possui componente para ser executado (opcionalmente) em um servidor para quem quiser acompanhar o sorteio ao-vivo.
+
 ## ✨ Função
 
 O objetivo do programa é exibir os últimos três números ou palavras digitados em destaque, dentro de círculos animados, ideal para sorteios, jogos ou dinâmicas em grupo. O usuário pode digitar uma lista de números (ou palavras) e os três últimos aparecem em destaque visual.
