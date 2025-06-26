@@ -79,12 +79,12 @@
         }
 
         /* --- Botão de Tema --- */
-        .theme-toggle-btn {
+        .theme-toggle-btn, .config-btn {
             background-color: var(--bg-circle);
             color: var(--text-secondary);
             border: 1px solid var(--border-color);
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             font-size: 1.2rem;
             cursor: pointer;
@@ -93,7 +93,7 @@
             align-items: center;
             transition: background-color 0.3s, transform 0.2s;
         }
-        .theme-toggle-btn:hover {
+        .theme-toggle-btn:hover, .config-btn:hover {
             transform: scale(1.1);
         }
         
@@ -271,7 +271,7 @@
         .bottom-controls {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.2rem;
             align-items: center; /* Adicionado */
         }
         
@@ -304,14 +304,15 @@
         .modal-content {
             background-color: var(--bg-container);
             color: var(--text-primary);
-            padding: 1rem;
+            padding: 2rem;
             border-radius: 12px;
-            max-width: 800px;
-            width: 95%;
-            max-height: 90vh; /* Ajustado */
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
             display: flex;
             flex-direction: column;
-            position: relative;
         }
         .modal-close-btn {
             position: absolute;
@@ -324,34 +325,45 @@
             color: var(--text-placeholder);
         }
         
-        .modal-table-wrapper {
-            overflow-y: auto; /* Apenas o wrapper da tabela rola */
-            min-height: 0; /* Correção para flexbox */
-        }
-        
         #sorted-table {
             width: 100%;
             border-collapse: collapse;
             text-align: center;
-            table-layout: fixed; /* Adicionado para colunas fixas */
+            margin-bottom: 1rem;
         }
-        
         #sorted-table th, #sorted-table td {
             border: 1px solid var(--border-color);
-            padding: 0rem; 
-            font-size: 2.5rem; 
+            padding: 0.5rem;
+            font-size: 1.2rem;
         }
         #sorted-table th {
             background-color: var(--circle-large-bg-color);
             color: var(--circle-large-font-color);
             font-family: 'Roboto Slab', serif;
-            position: sticky; /* Cabeçalho fixo */
-            top: 0;
         }
         #sorted-table td {
             background-color: #fcfaff; 
             color: #333; 
         }
+        
+        /* Modal de Configuração */
+        #config-modal .modal-content h2 { margin-top: 0; }
+        #config-modal p { margin-bottom: 2rem; }
+        .config-row { display: flex; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .config-row .bingo-letter { font-size: 1.5rem; font-weight: bold; width: 30px; }
+        .config-row span { margin: 0 0.5rem; }
+        .config-row input {
+            width: 40px;
+            margin-left: 1rem;
+            margin-right: 1rem;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+        }
+        .config-api-label { font-weight: bold; margin-top: 1rem; }
+        .modal-actions { margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem; }
 
         .modal-input {
             width: 100%;
@@ -440,20 +452,21 @@
         <footer class="bottom-section">
              <div class="input-wrapper">
                 <div class="textarea-container">
-                    <button class="numbers-btn" id="show-sorted-btn">Números ⚙️</button>
+                    <button class="numbers-btn" id="show-sorted-btn">Números</button>
                     <textarea id="multi-line-input" placeholder="Digite os números sorteados"></textarea>
                 </div>
                 <div class="bottom-controls">
                     <input type="color" id="border-color-picker" class="color-picker" title="Mudar cor da borda">
                     <input type="color" id="circle-large-color-picker" class="color-picker" title="Mudar cor do fundo do círculo">
                     <input type="color" id="circle-large-font-color-picker" class="color-picker" title="Mudar cor da fonte do círculo">
+                    <button id="config-btn" class="config-btn" title="Configurações">⚙️</button>
                     <button id="theme-toggle" class="theme-toggle-btn">🌙</button>
                 </div>
             </div>
         </footer>
     </div>
     
-    <!-- Modal de Conteúdo Ordenado -->
+    <!-- Modal de Cartela -->
     <div id="sorted-modal" class="modal-overlay">
         <div class="modal-content">
             <button id="modal-close-btn" class="modal-close-btn">&times;</button>
@@ -465,7 +478,37 @@
                     <tbody></tbody>
                 </table>
             </div>
-            <input type="text" id="link-api" class="modal-input" placeholder="Link da API" value="https://0.0.0.0:8000">
+            <input type="text" id="link-api" class="modal-input" placeholder="Link da API" value="https://tinyurl.com/bingo-estancia">
+        </div>
+    </div>
+    
+    <!-- Modal de Configuração -->
+    <div id="config-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="config-modal-close-btn" class="modal-close-btn">&times;</button>
+            <h2>Configuração</h2>
+            <p>Aqui estão as faixas de números das cartelas e também o endereço Internet que está configurado para acompanhar o sorteio.</p>
+            <div class="config-row">
+                <span class="bingo-letter">B</span> de <input type="number" id="b-min"> a <input type="number" id="b-max">
+            </div>
+            <div class="config-row">
+                <span class="bingo-letter">I</span> de <input type="number" id="i-min"> a <input type="number" id="i-max">
+            </div>
+            <div class="config-row">
+                <span class="bingo-letter">N</span> de <input type="number" id="n-min"> a <input type="number" id="n-max">
+            </div>
+            <div class="config-row">
+                <span class="bingo-letter">G</span> de <input type="number" id="g-min"> a <input type="number" id="g-max">
+            </div>
+            <div class="config-row">
+                <span class="bingo-letter">O</span> de <input type="number" id="o-min"> a <input type="number" id="o-max">
+            </div>
+            <label class="config-api-label" for="config-link-api">API</label>
+            <input type="text" id="config-link-api" class="modal-input" placeholder="http://0.0.0.0:8000">
+            <div class="modal-actions">
+                <button id="config-cancel-btn" class="numbers-btn">Cancelar</button>
+                <button id="config-save-btn" class="numbers-btn">Salvar</button>
+            </div>
         </div>
     </div>
 
@@ -488,19 +531,25 @@
         const sortedModal = document.getElementById('sorted-modal');
         const modalCloseBtn = document.getElementById('modal-close-btn');
         const sortedTableBody = document.querySelector('#sorted-table tbody');
+        const configBtn = document.getElementById('config-btn');
+        const configModal = document.getElementById('config-modal');
+        const configModalCloseBtn = document.getElementById('config-modal-close-btn');
+        const configSaveBtn = document.getElementById('config-save-btn');
+        const configCancelBtn = document.getElementById('config-cancel-btn');
         
         let typingTimer;
         const doneTypingInterval = 2000;
+        let bingoConfig = {};
 
-        // --- Lógica dos Círculos ---
+        // --- Lógica dos Círculos e Badges ---
         function getBingoLetter(word) {
             if (word && /^\d+$/.test(word)) {
                 const num = parseInt(word, 10);
-                if (num <= 15) return 'B';
-                if (num <= 30) return 'I';
-                if (num <= 45) return 'N';
-                if (num <= 60) return 'G';
-                if (num >= 61) return 'O';
+                if (num >= bingoConfig.b_min && num <= bingoConfig.b_max) return 'B';
+                if (num >= bingoConfig.i_min && num <= bingoConfig.i_max) return 'I';
+                if (num >= bingoConfig.n_min && num <= bingoConfig.n_max) return 'N';
+                if (num >= bingoConfig.g_min && num <= bingoConfig.g_max) return 'G';
+                if (num >= bingoConfig.o_min && num <= bingoConfig.o_max) return 'O';
             }
             return ' ';
         }
@@ -605,11 +654,11 @@
             const items = textArea.value.trim().split(/\s+/).filter(item => item.length > 0);
             const allNumbers = items.filter(item => !isNaN(parseFloat(item)) && isFinite(item)).map(Number);
             
-            const b_col = allNumbers.filter(n => n >= 1 && n <= 15).sort((a,b) => a-b);
-            const i_col = allNumbers.filter(n => n >= 16 && n <= 30).sort((a,b) => a-b);
-            const n_col = allNumbers.filter(n => n >= 31 && n <= 45).sort((a,b) => a-b);
-            const g_col = allNumbers.filter(n => n >= 46 && n <= 60).sort((a,b) => a-b);
-            const o_col = allNumbers.filter(n => n >= 61 && n <= 75).sort((a,b) => a-b);
+            const b_col = allNumbers.filter(n => n >= bingoConfig.b_min && n <= bingoConfig.b_max).sort((a,b) => a-b);
+            const i_col = allNumbers.filter(n => n >= bingoConfig.i_min && n <= bingoConfig.i_max).sort((a,b) => a-b);
+            const n_col = allNumbers.filter(n => n >= bingoConfig.n_min && n <= bingoConfig.n_max).sort((a,b) => a-b);
+            const g_col = allNumbers.filter(n => n >= bingoConfig.g_min && n <= bingoConfig.g_max).sort((a,b) => a-b);
+            const o_col = allNumbers.filter(n => n >= bingoConfig.o_min && n <= bingoConfig.o_max).sort((a,b) => a-b);
             const maxLength = Math.max(15, b_col.length, i_col.length, n_col.length, g_col.length, o_col.length);
 
             let tableRowsHtml = '';
@@ -657,7 +706,7 @@
 
             if (apiUrl && (apiUrl.startsWith('http://') || apiUrl.startsWith('https://'))) {
                 try {
-                    const response = await fetch(`${apiUrl}/update`, {
+                    const response = await fetch(`${apiUrl}/input`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'text/html; charset=utf-8',
@@ -682,11 +731,11 @@
             const items = textArea.value.trim().split(/\s+/).filter(item => item.length > 0);
             const allNumbers = items.filter(item => !isNaN(parseFloat(item)) && isFinite(item)).map(Number);
             
-            const b_col = allNumbers.filter(n => n >= 1 && n <= 15).sort((a,b) => a-b);
-            const i_col = allNumbers.filter(n => n >= 16 && n <= 30).sort((a,b) => a-b);
-            const n_col = allNumbers.filter(n => n >= 31 && n <= 45).sort((a,b) => a-b);
-            const g_col = allNumbers.filter(n => n >= 46 && n <= 60).sort((a,b) => a-b);
-            const o_col = allNumbers.filter(n => n >= 61 && n <= 75).sort((a,b) => a-b);
+            const b_col = allNumbers.filter(n => n >= bingoConfig.b_min && n <= bingoConfig.b_max).sort((a,b) => a-b);
+            const i_col = allNumbers.filter(n => n >= bingoConfig.i_min && n <= bingoConfig.i_max).sort((a,b) => a-b);
+            const n_col = allNumbers.filter(n => n >= bingoConfig.n_min && n <= bingoConfig.n_max).sort((a,b) => a-b);
+            const g_col = allNumbers.filter(n => n >= bingoConfig.g_min && n <= bingoConfig.g_max).sort((a,b) => a-b);
+            const o_col = allNumbers.filter(n => n >= bingoConfig.o_min && n <= bingoConfig.o_max).sort((a,b) => a-b);
 
             const maxLength = Math.max(15, b_col.length, i_col.length, n_col.length, g_col.length, o_col.length);
 
@@ -731,8 +780,72 @@
             }
         });
 
+        // --- Lógica de Configuração ---
+        function loadConfig() {
+            const savedConfig = JSON.parse(localStorage.getItem('bingoConfig'));
+            bingoConfig = savedConfig || {
+                b_min: 1, b_max: 15,
+                i_min: 16, i_max: 30,
+                n_min: 31, n_max: 45,
+                g_min: 46, g_max: 60,
+                o_min: 61, o_max: 75,
+                apiUrl: 'https://tinyurl.com/bingo-estancia'
+            };
+
+            // Popula os campos da modal de configuração
+            document.getElementById('b-min').value = bingoConfig.b_min;
+            document.getElementById('b-max').value = bingoConfig.b_max;
+            document.getElementById('i-min').value = bingoConfig.i_min;
+            document.getElementById('i-max').value = bingoConfig.i_max;
+            document.getElementById('n-min').value = bingoConfig.n_min;
+            document.getElementById('n-max').value = bingoConfig.n_max;
+            document.getElementById('g-min').value = bingoConfig.g_min;
+            document.getElementById('g-max').value = bingoConfig.g_max;
+            document.getElementById('o-min').value = bingoConfig.o_min;
+            document.getElementById('o-max').value = bingoConfig.o_max;
+            document.getElementById('config-link-api').value = bingoConfig.apiUrl;
+
+            // Atualiza o campo de API da outra modal também
+            document.getElementById('link-api').value = bingoConfig.apiUrl;
+        }
+        
+        configBtn.addEventListener('click', () => {
+            configModal.style.display = 'flex';
+        });
+
+        configSaveBtn.addEventListener('click', () => {
+             bingoConfig = {
+                b_min: parseInt(document.getElementById('b-min').value) || 1, 
+                b_max: parseInt(document.getElementById('b-max').value) || 15,
+                i_min: parseInt(document.getElementById('i-min').value) || 16, 
+                i_max: parseInt(document.getElementById('i-max').value) || 30,
+                n_min: parseInt(document.getElementById('n-min').value) || 31, 
+                n_max: parseInt(document.getElementById('n-max').value) || 45,
+                g_min: parseInt(document.getElementById('g-min').value) || 46, 
+                g_max: parseInt(document.getElementById('g-max').value) || 60,
+                o_min: parseInt(document.getElementById('o-min').value) || 61, 
+                o_max: parseInt(document.getElementById('o-max').value) || 75,
+                apiUrl: document.getElementById('config-link-api').value
+            };
+            localStorage.setItem('bingoConfig', JSON.stringify(bingoConfig));
+            document.getElementById('link-api').value = bingoConfig.apiUrl;
+            configModal.style.display = 'none';
+        });
+
+        configCancelBtn.addEventListener('click', () => {
+            loadConfig(); // Reseta para os valores salvos
+            configModal.style.display = 'none';
+        });
+        
+        configModalCloseBtn.addEventListener('click', () => configCancelBtn.click());
+        
+        configModal.addEventListener('click', (event) => {
+            if(event.target === configModal) configCancelBtn.click();
+        });
+
         // Verifica as preferências salvas no carregamento da página
         document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
             applyThemeAndColor();
         });
 

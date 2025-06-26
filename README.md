@@ -67,3 +67,4 @@ O objetivo do programa é exibir os últimos três números ou palavras digitado
 ---
 
 Desenvolvido para ser simples, visual e fácil de personalizar!
+![screen shot](image.png)
