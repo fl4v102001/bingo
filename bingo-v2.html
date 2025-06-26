@@ -306,7 +306,7 @@
             color: var(--text-primary);
             padding: 2rem;
             border-radius: 12px;
-            max-width: 500px;
+            max-width: 640px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
@@ -349,18 +349,34 @@
         /* Modal de Configuração */
         #config-modal .modal-content h2 { margin-top: 0; }
         #config-modal p { margin-bottom: 2rem; }
-        .config-row { display: flex; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .config-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem; 
+            border-bottom: 1px solid var(--border-color); 
+            padding-bottom: 1rem; 
+        }
+        .config-range-group { display: flex; align-items: center; }
         .config-row .bingo-letter { font-size: 1.5rem; font-weight: bold; width: 30px; }
         .config-row span { margin: 0 0.5rem; }
         .config-row input {
-            width: 40px;
-            margin-left: 1rem;
-            margin-right: 1rem;
             padding: 0.5rem;
             border: 1px solid var(--border-color);
             border-radius: 4px;
             background-color: var(--bg-input);
             color: var(--text-primary);
+        }
+        .config-row input[type="number"] {
+             width: 40px;
+        }
+        .msg-input-group {
+            border-left: 1px solid var(--border-color);
+            padding-left: 1rem;
+        }
+        .msg-input {
+            width: 100%;
         }
         .config-api-label { font-weight: bold; margin-top: 1rem; }
         .modal-actions { margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem; }
@@ -368,7 +384,7 @@
         .modal-input {
             width: 100%;
             padding: 0.75rem;
-            margin-top: 1rem;
+            margin-top: 0rem;
             border-radius: 8px;
             border: 1px solid var(--border-color);
             background-color: var(--bg-input);
@@ -478,7 +494,6 @@
                     <tbody></tbody>
                 </table>
             </div>
-            <input type="text" id="link-api" class="modal-input" placeholder="Link da API" value="https://tinyurl.com/bingo-estancia">
         </div>
     </div>
     
@@ -487,21 +502,46 @@
         <div class="modal-content">
             <button id="config-modal-close-btn" class="modal-close-btn">&times;</button>
             <h2>Configuração</h2>
-            <p>Aqui estão as faixas de números das cartelas e também o endereço Internet que está configurado para acompanhar o sorteio.</p>
+            <p>Aqui estão as faixas de números das cartelas, as mensagens que serão mostradas no topo da tela (caso existam) e o endereço Internet já configurado para acompanhar o sorteio (opcional).</p>
             <div class="config-row">
-                <span class="bingo-letter">B</span> de <input type="number" id="b-min"> a <input type="number" id="b-max">
+                <div class="config-range-group">
+                    <span class="bingo-letter">B</span> de <input type="number" id="b-min"> a <input type="number" id="b-max">
+                </div>
+                <div class="msg-input-group">
+                    <input type="text" id="msg-1" class="modal-input msg-input" placeholder="Mensagem 1" disabled>
+                </div>
             </div>
             <div class="config-row">
-                <span class="bingo-letter">I</span> de <input type="number" id="i-min"> a <input type="number" id="i-max">
+                 <div class="config-range-group">
+                    <span class="bingo-letter">I</span> de <input type="number" id="i-min"> a <input type="number" id="i-max">
+                </div>
+                <div class="msg-input-group">
+                    <input type="text" id="msg-2" class="modal-input msg-input" placeholder="Mensagem 2">
+                </div>
             </div>
             <div class="config-row">
-                <span class="bingo-letter">N</span> de <input type="number" id="n-min"> a <input type="number" id="n-max">
+                <div class="config-range-group">
+                    <span class="bingo-letter">N</span> de <input type="number" id="n-min"> a <input type="number" id="n-max">
+                </div>
+                <div class="msg-input-group">
+                    <input type="text" id="msg-3" class="modal-input msg-input" placeholder="Mensagem 3">
+                </div>
             </div>
             <div class="config-row">
-                <span class="bingo-letter">G</span> de <input type="number" id="g-min"> a <input type="number" id="g-max">
+                <div class="config-range-group">
+                    <span class="bingo-letter">G</span> de <input type="number" id="g-min"> a <input type="number" id="g-max">
+                </div>
+                <div class="msg-input-group">
+                    <input type="text" id="msg-4" class="modal-input msg-input" placeholder="Mensagem 4">
+                </div>
             </div>
             <div class="config-row">
-                <span class="bingo-letter">O</span> de <input type="number" id="o-min"> a <input type="number" id="o-max">
+                <div class="config-range-group">
+                    <span class="bingo-letter">O</span> de <input type="number" id="o-min"> a <input type="number" id="o-max">
+                </div>
+                <div class="msg-input-group">
+                    <input type="text" id="msg-5" class="modal-input msg-input" placeholder="Mensagem 5">
+                </div>
             </div>
             <label class="config-api-label" for="config-link-api">API</label>
             <input type="text" id="config-link-api" class="modal-input" placeholder="http://0.0.0.0:8000">
@@ -536,6 +576,7 @@
         const configModalCloseBtn = document.getElementById('config-modal-close-btn');
         const configSaveBtn = document.getElementById('config-save-btn');
         const configCancelBtn = document.getElementById('config-cancel-btn');
+        const apiLinkInput = document.getElementById('config-link-api');
         
         let typingTimer;
         const doneTypingInterval = 2000;
@@ -702,7 +743,7 @@
             console.log("--- HTML da Tabela para Exportação ---");
             console.log(tableHtml);
 
-            const apiUrl = document.getElementById('link-api').value.trim();
+            const apiUrl = bingoConfig.apiUrl.trim();
 
             if (apiUrl && (apiUrl.startsWith('http://') || apiUrl.startsWith('https://'))) {
                 try {
@@ -784,32 +825,24 @@
         function loadConfig() {
             const savedConfig = JSON.parse(localStorage.getItem('bingoConfig'));
             bingoConfig = savedConfig || {
-                b_min: 1, b_max: 15,
-                i_min: 16, i_max: 30,
-                n_min: 31, n_max: 45,
-                g_min: 46, g_max: 60,
-                o_min: 61, o_max: 75,
+                b_min: 1, b_max: 15, msg_1: '',
+                i_min: 16, i_max: 30, msg_2: '',
+                n_min: 31, n_max: 45, msg_3: '',
+                g_min: 46, g_max: 60, msg_4: '',
+                o_min: 61, o_max: 75, msg_5: '',
                 apiUrl: 'https://tinyurl.com/bingo-estancia'
             };
 
-            // Popula os campos da modal de configuração
-            document.getElementById('b-min').value = bingoConfig.b_min;
-            document.getElementById('b-max').value = bingoConfig.b_max;
-            document.getElementById('i-min').value = bingoConfig.i_min;
-            document.getElementById('i-max').value = bingoConfig.i_max;
-            document.getElementById('n-min').value = bingoConfig.n_min;
-            document.getElementById('n-max').value = bingoConfig.n_max;
-            document.getElementById('g-min').value = bingoConfig.g_min;
-            document.getElementById('g-max').value = bingoConfig.g_max;
-            document.getElementById('o-min').value = bingoConfig.o_min;
-            document.getElementById('o-max').value = bingoConfig.o_max;
-            document.getElementById('config-link-api').value = bingoConfig.apiUrl;
-
-            // Atualiza o campo de API da outra modal também
-            document.getElementById('link-api').value = bingoConfig.apiUrl;
+            for (const key in bingoConfig) {
+                const elementId = key.replace('_', '-');
+                const element = document.getElementById(elementId);
+                if(element) element.value = bingoConfig[key];
+            }
+            apiLinkInput.value = bingoConfig.apiUrl;
         }
         
         configBtn.addEventListener('click', () => {
+            document.getElementById('msg-1').value = singleLineInput.value;
             configModal.style.display = 'flex';
         });
 
@@ -817,18 +850,23 @@
              bingoConfig = {
                 b_min: parseInt(document.getElementById('b-min').value) || 1, 
                 b_max: parseInt(document.getElementById('b-max').value) || 15,
+                msg_1: document.getElementById('msg-1').value,
                 i_min: parseInt(document.getElementById('i-min').value) || 16, 
                 i_max: parseInt(document.getElementById('i-max').value) || 30,
+                msg_2: document.getElementById('msg-2').value,
                 n_min: parseInt(document.getElementById('n-min').value) || 31, 
                 n_max: parseInt(document.getElementById('n-max').value) || 45,
+                msg_3: document.getElementById('msg-3').value,
                 g_min: parseInt(document.getElementById('g-min').value) || 46, 
                 g_max: parseInt(document.getElementById('g-max').value) || 60,
+                msg_4: document.getElementById('msg-4').value,
                 o_min: parseInt(document.getElementById('o-min').value) || 61, 
                 o_max: parseInt(document.getElementById('o-max').value) || 75,
+                msg_5: document.getElementById('msg-5').value,
                 apiUrl: document.getElementById('config-link-api').value
             };
             localStorage.setItem('bingoConfig', JSON.stringify(bingoConfig));
-            document.getElementById('link-api').value = bingoConfig.apiUrl;
+            singleLineInput.value = bingoConfig.msg_1; // Atualiza o input principal
             configModal.style.display = 'none';
         });
 
