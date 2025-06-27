@@ -479,9 +479,22 @@
             opacity: 0;
         }
     }
+
+    /* --- Animação de Fogos de Artifício --- */
+    #fireworks-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 999; /* Sobre o conteúdo, mas abaixo dos modais */
+        pointer-events: none; /* Impede interação com o mouse */
+        display: none; /* Começa escondido */
+    }
 </style>
 </head>
 <body>
+    <canvas id="fireworks-canvas"></canvas>
 
     <div class="main-container">
         <!-- Seção Superior -->
@@ -633,6 +646,7 @@
         const configCancelBtn = document.getElementById('config-cancel-btn');
         const apiLinkInput = document.getElementById('apiUrl');
         const marquee = document.getElementById('single-line-marquee');
+        const fireworksCanvas = document.getElementById('fireworks-canvas');
         
         let typingTimer;
         const doneTypingInterval = 2000;
@@ -640,6 +654,11 @@
         let marqueeMessages = [];
         let currentMessageIndex = 0;
         let isMarqueeSetup = false;
+        let lastCommand = '';
+        // Variáveis para a animação de fogos de artifício
+        let f_ctx, f_width, f_height, animationFrameId;
+        const fireworks = [];
+        const particles = [];
 
         // --- Lógica dos Círculos e Badges ---
         function getBingoLetter(word) {
@@ -652,6 +671,11 @@
                 if (num >= bingoConfig.o_min && num <= bingoConfig.o_max) return 'O';
             }
             return ' ';
+        }
+
+        function isCommand(command) {
+            const validCommands = ['limpar', 'resetar', 'bingo', 'parar'];
+            return validCommands.includes(command.toLowerCase());
         }
 
         function runMarqueeAnimation() {
@@ -696,10 +720,36 @@
             setTimeout(runMarqueeAnimation, 100);
         }
 
+        // --- Lógica de Input de Números e Comandos ---
         textArea.addEventListener('input', () => {
             clearTimeout(typingTimer);
-            
-            const words = textArea.value.trim().split(/\s+/).filter(word => word.length > 0);
+
+            let words = textArea.value.trim().split(/\s+/).filter(word => word.length > 0);
+
+            if (words.length > 0 && !/^\d+$/.test(words[words.length - 1])) {
+                const potentialCommand = words.pop().toLowerCase();
+
+                if (isCommand(potentialCommand)) {
+                    lastCommand = potentialCommand;
+                    const mainContainer = document.querySelector('.main-container');
+                    mainContainer.classList.add('flash-success');
+                    mainContainer.addEventListener('animationend', () => mainContainer.classList.remove('flash-success'), { once: true });
+
+                    if (potentialCommand === 'bingo') {
+                        triggerBingoAnimation();
+                        textArea.value = words.join(' ') + ' '; // Remove o comando mas mantém os números
+                    } else if (potentialCommand === 'limpar' || potentialCommand === 'resetar') {
+                        textArea.value = '';
+                        words = [];
+                    } else if (potentialCommand === 'parar') {
+                        stopBingoAnimation();
+                        textArea.value = words.join(' ') + ' '; // Remove o comando
+                    }
+                } else {
+                    lastCommand = potentialCommand;
+                }
+            }
+
             const lastWord = words[words.length - 1] || '';
             const secondLastWord = words[words.length - 2] || '';
             const thirdLastWord = words[words.length - 3] || '';
@@ -1006,7 +1056,145 @@
             loadConfig();
             applyThemeAndColor();
             setupMarqueeListener();
+            setupFireworks();
         });
+
+
+        // --- Lógica da Animação do BINGO ---
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function setupFireworks() {
+            if (!fireworksCanvas) return;
+            f_ctx = fireworksCanvas.getContext('2d');
+            f_width = fireworksCanvas.width = window.innerWidth;
+            f_height = fireworksCanvas.height = window.innerHeight;
+            window.addEventListener('resize', () => {
+                f_width = fireworksCanvas.width = window.innerWidth;
+                f_height = fireworksCanvas.height = window.innerHeight;
+            });
+        }
+
+        class Firework {
+            constructor() {
+                this.x = random(f_width * 0.2, f_width * 0.8);
+                this.y = f_height;
+                this.targetY = random(f_height * 0.2, f_height * 0.5);
+                this.speed = random(3, 5);
+                this.color = `hsl(${random(0, 360)}, 100%, 60%)`;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y <= this.targetY) {
+                    explode(this.x, this.y, this.color);
+                    return false;
+                }
+                return true;
+            }
+            draw() {
+                f_ctx.beginPath();
+                f_ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                f_ctx.fillStyle = this.color;
+                f_ctx.fill();
+            }
+        }
+
+        // --- Lógica da Animação do BINGO (Versão Melhorada) ---
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = random(0, Math.PI * 2);
+                const speed = random(1, 10);
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.gravity = 0.1;
+                this.friction = 0.98;
+                this.life = random(60, 100); // Vida útil em frames
+                this.initialLife = this.life;
+                this.alpha = 1;
+            }
+            update() {
+                this.life--;
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha = Math.max(0, this.life / this.initialLife); // Efeito de fade
+                return this.life > 0;
+            }
+            draw() {
+                f_ctx.save();
+                f_ctx.globalAlpha = this.alpha;
+                f_ctx.beginPath();
+                f_ctx.arc(this.x, this.y, 4, 0, Math.PI * 2, false);
+                f_ctx.fillStyle = this.color;
+                f_ctx.fill();
+                f_ctx.restore();
+            }
+        }
+
+        function explode(x, y, color) {
+            const particleCount = 50 + random(0, 50); // Explosão mais densa
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        function fireworksAnimateLoop() {
+            // Pede o próximo frame
+            animationFrameId = requestAnimationFrame(fireworksAnimateLoop);
+
+            // Limpa o canvas para um novo desenho, sem deixar rastros
+            f_ctx.clearRect(0, 0, f_width, f_height);
+
+            // Lança novos fogos de artifício aleatoriamente para manter o loop contínuo
+            if (Math.random() < 0.04) { // Ajuste a probabilidade para controlar a frequência
+                fireworks.push(new Firework());
+            }
+
+            // Atualiza e desenha os fogos
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                if (!fireworks[i].update()) fireworks.splice(i, 1);
+                else fireworks[i].draw();
+            }
+
+            // Atualiza e desenha as partículas
+            for (let i = particles.length - 1; i >= 0; i--) {
+                if (!particles[i].update()) particles.splice(i, 1);
+                else particles[i].draw();
+            }
+
+        }
+
+        function triggerBingoAnimation() {
+            if (!fireworksCanvas) return;
+            
+            const burstSize = 5 + Math.floor(random(0, 6)); // Lança de 5 a 10 fogos
+            for (let i = 0; i < burstSize; i++) {
+                setTimeout(() => fireworks.push(new Firework()), i * 100); // Lançamento escalonado
+            }
+            
+            if (!animationFrameId) { // Inicia o loop se não estiver rodando
+                fireworksCanvas.style.display = 'block';
+                fireworksAnimateLoop();
+            } else stopBingoAnimation(); // Para a animação se já estiver rodando
+        }
+
+        function stopBingoAnimation() {
+            if (!fireworksCanvas) return;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            fireworks.length = 0;
+            particles.length = 0;
+            if (f_ctx) f_ctx.clearRect(0, 0, f_width, f_height);
+            fireworksCanvas.style.display = 'none';
+        }
 
     </script>
 
