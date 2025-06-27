@@ -4,7 +4,7 @@ Um painel web moderno e interativo para exibir números sorteados em um jogo de 
 Visão Geral
 Esta aplicação fornece uma interface visualmente atraente para o gerenciamento de um sorteio de bingo. O locutor pode inserir os números sorteados, e o painel os exibe em destaque, junto com a letra correspondente (B-I-N-G-O). Além disso, oferece recursos avançados como personalização de cores, animações, visualização de cartela e integração via API.
 
-(Sugestão: Adicione aqui um screenshot ou um GIF da aplicação em funcionamento)
+![image](https://github.com/user-attachments/assets/d858c8a1-0996-4208-a578-4dd7f84cbd32)
 
 ✨ Principais Funcionalidades
 Exibição em Tempo Real: Mostra instantaneamente os 3 últimos números sorteados em círculos de destaque.
@@ -32,6 +32,7 @@ Comandos Especiais: Digite uma das palavras abaixo como o último item na área 
 bingo: Aciona a animação de fogos de artifício.
 parar: Interrompe a animação de fogos de artifício.
 limpar ou resetar: Limpa todos os números da tela e do histórico.
+
 ⚙️ Painel de Controle e Configurações
 Na parte inferior direita, você encontra os seguintes controles:
 
@@ -47,7 +48,8 @@ No modal de configuração, você pode ajustar:
 Faixas de Números: Defina os valores mínimo e máximo para cada letra (B, I, N, G, O).
 Mensagens do Letreiro: Escreva mensagens personalizadas e defina por quanto tempo (em segundos) cada uma será exibida no letreiro superior.
 API URL: Informe um endereço web para o qual os dados do sorteio serão enviados (veja a seção de Integração via API).
-🔌 Integração via API (Para Desenvolvedores)
+
+Integração via API (Para Desenvolvedores)
 A aplicação pode enviar o estado atual do sorteio para um servidor remoto, permitindo a exibição dos dados em uma segunda tela, em uma transmissão ao vivo (overlay) ou em outro sistema.
 
 Endpoint: A aplicação enviará os dados para o endereço que você fornecer no campo "API", com o caminho /input.
@@ -58,7 +60,7 @@ Exemplo do Payload enviado:
 
 HTML
 
-<meta charset="UTF-8"><h1>Sua Mensagem 1</h1><style>...</style><table><thead><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr></thead><tbody><tr><td>8</td><td>21</td><td>32</td><td>46</td><td>71</td></tr><tr><td>15</td><td></td><td></td><td>60</td><td></td></tr>...</tbody></table><a href="https://github.com/fl4v102001/bingo/" target="_blank">fl4v102001/bingo</a>
+<meta charset="UTF-8"><h1>Sua Mensagem 1</h1><style>...</style><table><thead><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr></thead><tbody><tr><td>8</td><td>21</td><td>32</td><td>46</td><td>71</td></tr><tr><td>15</td><td></td><td></td><td>60</td><td></td></tr>...</tbody></table>
 
 
 🛠️ Tecnologias Utilizadas
