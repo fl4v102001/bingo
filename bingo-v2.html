@@ -74,8 +74,9 @@
             background-color: transparent;
             display: flex;
             align-items: center;
-            padding: 1rem 1rem;
+            padding: 0rem 1rem;
             box-sizing: border-box;
+            overflow: hidden; /* Required for CSS marquee effect */
         }
 
         /* --- Botão de Tema --- */
@@ -158,8 +159,8 @@
             font-size: 8.8rem;
             box-shadow: 0 0 15px var(--secondary-glow-color), 0 0 30px var(--secondary-glow-color), 0 0 45px var(--primary-glow-color), 0 0 60px var(--primary-glow-color);
             animation: pulse-glow-gold 0.5s infinite alternate;
-            background-color: var(--circle-large-bg-color); /* Usa a variável específica */
-            color: var(--circle-large-font-color); /* Usa a variável específica */
+            background-color: var(--circle-large-bg-color);
+            color: var(--circle-large-font-color);
         }
         
         #circle-medium, #circle-small {
@@ -171,7 +172,7 @@
         
         .floating-badge {
             position: absolute;
-            bottom: -2rem; /* Alinha todos na mesma base vertical */
+            bottom: -2rem; 
             right: 0;
             transform: translateX(15%);
             background-color: transparent;
@@ -184,7 +185,7 @@
             padding: 0;
             box-sizing: border-box;
             transition: color 0.3s ease;
-            line-height: 0.8; /* Ajuda no alinhamento da base do texto */
+            line-height: 0.8; 
         }
         
         #badge-large {
@@ -215,27 +216,30 @@
             font-size: 3.5rem;
         }
         
-        #single-line-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            font-size: 3rem;
-            color: var(--text-primary);
-            font-weight: 300;
-            height: 60px;
-            box-sizing: border-box;
-        }
+        /* --- Seção de Entrada de Texto --- */
         
-        #single-line-input::placeholder,
         #multi-line-input::placeholder {
              color: var(--text-placeholder);
         }
 
-        /* --- Seção Inferior --- */
-        .bottom-section {
-             /* border-top: 1px solid var(--border-color); */ /* Removido */
+        #single-line-marquee {
+            font-size: 4rem;      /* ou ajuste conforme necessário */
+            font-weight: 400;
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,"Segoe UI", 'Inter',  Helvetica, Arial, sans-serif;
+            white-space: nowrap;
+            line-height: 1.2;
+            padding: 0 0;
+            background: transparent;
+            border: none;
+            display: inline-block;
         }
+        #single-line-marquee.is-animating {
+            animation: marquee-left-pause-left 25s linear;
+        }
+
+        /* --- Seção Inferior --- */
+        .bottom-section {}
 
         .input-wrapper {
             padding: 0rem 1rem;
@@ -267,12 +271,15 @@
             outline: none;
             border-color: var(--main-container-border-color);
         }
+
+        .flash-success { animation: flash-success-animation 1s ease-in-out 1; }
+        .flash-error { animation: flash-error-animation 1s ease-in-out 1; }
         
         .bottom-controls {
             display: flex;
             flex-direction: column;
             gap: 0.2rem;
-            align-items: center; /* Adicionado */
+            align-items: center;
         }
         
         .numbers-btn {
@@ -294,7 +301,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
-            display: none; /* Inicia escondido */
+            display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -306,7 +313,7 @@
             color: var(--text-primary);
             padding: 2rem;
             border-radius: 12px;
-            max-width: 640px;
+            max-width: 750px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
@@ -325,21 +332,28 @@
             color: var(--text-placeholder);
         }
         
+        .modal-table-wrapper {
+            overflow-y: auto;
+            min-height: 0;
+        }
+        
         #sorted-table {
             width: 100%;
             border-collapse: collapse;
             text-align: center;
-            margin-bottom: 1rem;
         }
+        
         #sorted-table th, #sorted-table td {
             border: 1px solid var(--border-color);
             padding: 0.5rem;
-            font-size: 1.2rem;
+            font-size: 2rem;
         }
         #sorted-table th {
             background-color: var(--circle-large-bg-color);
             color: var(--circle-large-font-color);
             font-family: 'Roboto Slab', serif;
+            position: sticky;
+            top: 0;
         }
         #sorted-table td {
             background-color: #fcfaff; 
@@ -349,15 +363,7 @@
         /* Modal de Configuração */
         #config-modal .modal-content h2 { margin-top: 0; }
         #config-modal p { margin-bottom: 2rem; }
-        .config-row {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem; 
-            border-bottom: 1px solid var(--border-color); 
-            padding-bottom: 1rem; 
-        }
+        .config-row { display: flex; align-items: stretch; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
         .config-range-group { display: flex; align-items: center; }
         .config-row .bingo-letter { font-size: 1.5rem; font-weight: bold; width: 30px; }
         .config-row span { margin: 0 0.5rem; }
@@ -370,10 +376,14 @@
         }
         .config-row input[type="number"] {
              width: 40px;
+             margin-left: 1rem;
+             margin-right: 1rem;
         }
         .msg-input-group {
+            flex-grow: 1;
             border-left: 1px solid var(--border-color);
             padding-left: 1rem;
+            margin-left: 1rem;
         }
         .msg-input {
             width: 100%;
@@ -438,6 +448,39 @@
             }
         }
 
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        @keyframes flash-success-animation {
+            50% { border-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
+        }
+        
+        @keyframes flash-error-animation {
+            50% { border-color: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
+        }
+
+        @keyframes marquee-left-pause-left {
+            0% {
+                transform: translateX(calc(100vw)); /* Garante que o texto comece totalmente fora da tela à direita */
+                opacity: 1;
+            }
+            30% {
+                transform: translateX(0%);
+                opacity: 1;
+            }
+            90% {
+                transform: translateX(0%);
+                opacity: 1;
+            }
+            100% {
+                /* Aplica apenas o fadeOut no final */
+                opacity: 0;
+            }
+        }
+        
+}
     </style>
 </head>
 <body>
@@ -445,7 +488,7 @@
     <div class="main-container">
         <!-- Seção Superior -->
         <header class="top-section">
-            <input type="text" id="single-line-input" placeholder="Digite uma mensagem importante">
+            <div id="single-line-marquee"></div>
         </header>
 
         <!-- Seção dos Círculos -->
@@ -505,46 +548,61 @@
             <p>Aqui estão as faixas de números das cartelas, as mensagens que serão mostradas no topo da tela (caso existam) e o endereço Internet já configurado para acompanhar o sorteio (opcional).</p>
             <div class="config-row">
                 <div class="config-range-group">
-                    <span class="bingo-letter">B</span> de <input type="number" id="b-min"> a <input type="number" id="b-max">
+                    <span class="bingo-letter">B</span> de <input type="number" id="b_min"> a <input type="number" id="b_max">
                 </div>
                 <div class="msg-input-group">
-                    <input type="text" id="msg-1" class="modal-input msg-input" placeholder="Mensagem 1" disabled>
+                    <input type="text" id="msg_1" class="modal-input msg-input" placeholder="Mensagem 1">
+                </div>
+                <div class="config-range-group">
+                    <input type="number" id="tempo_1" min="10" max="50" value="20" title="Tempo em segundos para a mensagem 1">
                 </div>
             </div>
             <div class="config-row">
                  <div class="config-range-group">
-                    <span class="bingo-letter">I</span> de <input type="number" id="i-min"> a <input type="number" id="i-max">
+                    <span class="bingo-letter">I</span> de <input type="number" id="i_min"> a <input type="number" id="i_max">
                 </div>
                 <div class="msg-input-group">
-                    <input type="text" id="msg-2" class="modal-input msg-input" placeholder="Mensagem 2">
+                    <input type="text" id="msg_2" class="modal-input msg-input" placeholder="Mensagem 2">
+                </div>
+                <div class="config-range-group">
+                    <input type="number" id="tempo_2" min="10" max="50" value="20" title="Tempo em segundos para a mensagem 2">
                 </div>
             </div>
             <div class="config-row">
                 <div class="config-range-group">
-                    <span class="bingo-letter">N</span> de <input type="number" id="n-min"> a <input type="number" id="n-max">
+                    <span class="bingo-letter">N</span> de <input type="number" id="n_min"> a <input type="number" id="n_max">
                 </div>
                 <div class="msg-input-group">
-                    <input type="text" id="msg-3" class="modal-input msg-input" placeholder="Mensagem 3">
+                    <input type="text" id="msg_3" class="modal-input msg-input" placeholder="Mensagem 3">
+                </div>
+                <div class="config-range-group">
+                    <input type="number" id="tempo_3" min="10" max="50" value="20" title="Tempo em segundos para a mensagem 3">
                 </div>
             </div>
             <div class="config-row">
                 <div class="config-range-group">
-                    <span class="bingo-letter">G</span> de <input type="number" id="g-min"> a <input type="number" id="g-max">
+                    <span class="bingo-letter">G</span> de <input type="number" id="g_min"> a <input type="number" id="g_max">
                 </div>
                 <div class="msg-input-group">
-                    <input type="text" id="msg-4" class="modal-input msg-input" placeholder="Mensagem 4">
+                    <input type="text" id="msg_4" class="modal-input msg-input" placeholder="Mensagem 4">
+                </div>
+                <div class="config-range-group">
+                    <input type="number" id="tempo_4" min="10" max="50" value="20" title="Tempo em segundos para a mensagem 4">
                 </div>
             </div>
             <div class="config-row">
                 <div class="config-range-group">
-                    <span class="bingo-letter">O</span> de <input type="number" id="o-min"> a <input type="number" id="o-max">
+                    <span class="bingo-letter">O</span> de <input type="number" id="o_min"> a <input type="number" id="o_max">
                 </div>
                 <div class="msg-input-group">
-                    <input type="text" id="msg-5" class="modal-input msg-input" placeholder="Mensagem 5">
+                    <input type="text" id="msg_5" class="modal-input msg-input" placeholder="Mensagem 5">
+                </div>
+                <div class="config-range-group">
+                    <input type="number" id="tempo_5" min="10" max="50" value="20" title="Tempo em segundos para a mensagem 5">
                 </div>
             </div>
-            <label class="config-api-label" for="config-link-api">API</label>
-            <input type="text" id="config-link-api" class="modal-input" placeholder="http://0.0.0.0:8000">
+            <label class="config-api-label" for="apiUrl">API</label>
+            <input type="text" id="apiUrl" class="modal-input" placeholder="http://0.0.0.0:8000">
             <div class="modal-actions">
                 <button id="config-cancel-btn" class="numbers-btn">Cancelar</button>
                 <button id="config-save-btn" class="numbers-btn">Salvar</button>
@@ -555,7 +613,6 @@
     <script>
         // --- Seleção de Elementos do DOM ---
         const textArea = document.getElementById('multi-line-input');
-        const singleLineInput = document.getElementById('single-line-input');
         const largeCircle = document.getElementById('circle-large');
         const mediumCircle = document.getElementById('circle-medium');
         const smallCircle = document.getElementById('circle-small');
@@ -576,11 +633,15 @@
         const configModalCloseBtn = document.getElementById('config-modal-close-btn');
         const configSaveBtn = document.getElementById('config-save-btn');
         const configCancelBtn = document.getElementById('config-cancel-btn');
-        const apiLinkInput = document.getElementById('config-link-api');
+        const apiLinkInput = document.getElementById('apiUrl');
+        const marquee = document.getElementById('single-line-marquee');
         
         let typingTimer;
         const doneTypingInterval = 2000;
         let bingoConfig = {};
+        let marqueeMessages = [];
+        let currentMessageIndex = 0;
+        let isMarqueeSetup = false;
 
         // --- Lógica dos Círculos e Badges ---
         function getBingoLetter(word) {
@@ -593,6 +654,48 @@
                 if (num >= bingoConfig.o_min && num <= bingoConfig.o_max) return 'O';
             }
             return ' ';
+        }
+
+        function runMarqueeAnimation() {
+            if (!marquee || marqueeMessages.length === 0) {
+                if (marquee) {
+                    marquee.textContent = '';
+                    marquee.classList.remove('is-animating');
+                }
+                return;
+            }
+
+            currentMessageIndex = currentMessageIndex % marqueeMessages.length;
+            const { msg, tempo } = marqueeMessages[currentMessageIndex];
+            marquee.textContent = msg;
+
+            marquee.style.animation = 'none';
+            void marquee.offsetWidth;
+            marquee.style.animation = `marquee-left-pause-left ${tempo || 25}s linear`;
+
+            marquee.classList.add('is-animating');
+            currentMessageIndex++;
+        }
+
+        function setupMarqueeListener() {
+            if (!marquee || isMarqueeSetup) return;
+            marquee.addEventListener('animationend', runMarqueeAnimation);
+            isMarqueeSetup = true;
+        }
+
+        function updateMarquee() {
+            if (!marquee) return;
+
+            marqueeMessages = [
+                { msg: bingoConfig.msg_1, tempo: bingoConfig.tempo_1 },
+                { msg: bingoConfig.msg_2, tempo: bingoConfig.tempo_2 },
+                { msg: bingoConfig.msg_3, tempo: bingoConfig.tempo_3 },
+                { msg: bingoConfig.msg_4, tempo: bingoConfig.tempo_4 },
+                { msg: bingoConfig.msg_5, tempo: bingoConfig.tempo_5 }
+            ].filter(item => item.msg && item.msg.trim() !== '');
+            currentMessageIndex = 0;
+            marquee.classList.remove('is-animating');
+            setTimeout(runMarqueeAnimation, 100);
         }
 
         textArea.addEventListener('input', () => {
@@ -686,7 +789,7 @@
         // --- Lógica do Modal e Exportação ---
 
         function gerarTabelaBingoHTML() {
-            const title = singleLineInput.value || '';
+            const title = bingoConfig.msg_1 || '';
             const computedStyles = getComputedStyle(root);
             const headerBgColor = computedStyles.getPropertyValue('--circle-large-bg-color').trim();
             const headerFontColor = computedStyles.getPropertyValue('--circle-large-font-color').trim();
@@ -757,11 +860,19 @@
 
                     if (response.ok) {
                         console.log("HTML da tabela enviado para a API com sucesso!");
+                        textArea.classList.add('flash-success');
+                        textArea.addEventListener('animationend', () => {
+                            textArea.classList.remove('flash-success');
+                        }, { once: true });
                     } else {
                         throw new Error(`API retornou um erro: ${response.status} ${response.statusText}`);
                     }
                 } catch (error) {
                     console.error("Erro ao enviar para a API:", error);
+                    textArea.classList.add('flash-error');
+                    textArea.addEventListener('animationend', () => {
+                        textArea.classList.remove('flash-error');
+                    }, { once: true });
                 }
             } else {
                  console.log("Nenhum link de API válido foi fornecido. HTML gerado apenas no console.");
@@ -825,49 +936,60 @@
         function loadConfig() {
             const savedConfig = JSON.parse(localStorage.getItem('bingoConfig'));
             bingoConfig = savedConfig || {
-                b_min: 1, b_max: 15, msg_1: '',
-                i_min: 16, i_max: 30, msg_2: '',
-                n_min: 31, n_max: 45, msg_3: '',
-                g_min: 46, g_max: 60, msg_4: '',
-                o_min: 61, o_max: 75, msg_5: '',
+                b_min: 1, b_max: 15, msg_1: '', tempo_1: 20,
+                i_min: 16, i_max: 30, msg_2: '', tempo_2: 20,
+                n_min: 31, n_max: 45, msg_3: '', tempo_3: 20,
+                g_min: 46, g_max: 60, msg_4: '', tempo_4: 20,
+                o_min: 61, o_max: 75, msg_5: '', tempo_5: 20,
                 apiUrl: 'https://tinyurl.com/bingo-estancia'
             };
 
             for (const key in bingoConfig) {
-                const elementId = key.replace('_', '-');
-                const element = document.getElementById(elementId);
+                const element = document.getElementById(key);
                 if(element) element.value = bingoConfig[key];
             }
             apiLinkInput.value = bingoConfig.apiUrl;
+
+            updateMarquee();
         }
         
         configBtn.addEventListener('click', () => {
-            document.getElementById('msg-1').value = singleLineInput.value;
+            for (const key in bingoConfig) {
+                const element = document.getElementById(key);
+                if(element) element.value = bingoConfig[key];
+            }
+            apiLinkInput.value = bingoConfig.apiUrl;
             configModal.style.display = 'flex';
         });
 
         configSaveBtn.addEventListener('click', () => {
-             bingoConfig = {
-                b_min: parseInt(document.getElementById('b-min').value) || 1, 
-                b_max: parseInt(document.getElementById('b-max').value) || 15,
-                msg_1: document.getElementById('msg-1').value,
-                i_min: parseInt(document.getElementById('i-min').value) || 16, 
-                i_max: parseInt(document.getElementById('i-max').value) || 30,
-                msg_2: document.getElementById('msg-2').value,
-                n_min: parseInt(document.getElementById('n-min').value) || 31, 
-                n_max: parseInt(document.getElementById('n-max').value) || 45,
-                msg_3: document.getElementById('msg-3').value,
-                g_min: parseInt(document.getElementById('g-min').value) || 46, 
-                g_max: parseInt(document.getElementById('g-max').value) || 60,
-                msg_4: document.getElementById('msg-4').value,
-                o_min: parseInt(document.getElementById('o-min').value) || 61, 
-                o_max: parseInt(document.getElementById('o-max').value) || 75,
-                msg_5: document.getElementById('msg-5').value,
-                apiUrl: document.getElementById('config-link-api').value
+            bingoConfig = {
+                b_min: parseInt(document.getElementById('b_min').value) || 1, 
+                b_max: parseInt(document.getElementById('b_max').value) || 15,
+                msg_1: document.getElementById('msg_1').value,
+                tempo_1: parseInt(document.getElementById('tempo_1').value) || 20,
+                i_min: parseInt(document.getElementById('i_min').value) || 16, 
+                i_max: parseInt(document.getElementById('i_max').value) || 30,
+                msg_2: document.getElementById('msg_2').value,
+                tempo_2: parseInt(document.getElementById('tempo_2').value) || 20,
+                n_min: parseInt(document.getElementById('n_min').value) || 31, 
+                n_max: parseInt(document.getElementById('n_max').value) || 45,
+                msg_3: document.getElementById('msg_3').value,
+                tempo_3: parseInt(document.getElementById('tempo_3').value) || 20,
+                g_min: parseInt(document.getElementById('g_min').value) || 46, 
+                g_max: parseInt(document.getElementById('g_max').value) || 60,
+                msg_4: document.getElementById('msg_4').value,
+                tempo_4: parseInt(document.getElementById('tempo_4').value) || 20,
+                o_min: parseInt(document.getElementById('o_min').value) || 61, 
+                o_max: parseInt(document.getElementById('o_max').value) || 75,
+                msg_5: document.getElementById('msg_5').value,
+                tempo_5: parseInt(document.getElementById('tempo_5').value) || 20,
+                apiUrl: document.getElementById('apiUrl').value
             };
             localStorage.setItem('bingoConfig', JSON.stringify(bingoConfig));
-            singleLineInput.value = bingoConfig.msg_1; // Atualiza o input principal
             configModal.style.display = 'none';
+
+            updateMarquee();
         });
 
         configCancelBtn.addEventListener('click', () => {
@@ -885,6 +1007,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadConfig();
             applyThemeAndColor();
+            setupMarqueeListener();
         });
 
     </script>
