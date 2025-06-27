@@ -282,6 +282,12 @@
             align-items: center;
         }
         
+        .action-buttons-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 5px;
+        }
+
         .numbers-btn {
             background-color: var(--bg-circle);
             color: var(--text-secondary);
@@ -290,7 +296,6 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
-            margin-bottom: 5px;
         }
         
         /* --- Modal --- */
@@ -491,6 +496,11 @@
         pointer-events: none; /* Impede interação com o mouse */
         display: none; /* Começa escondido */
     }
+
+    #config-modal .modal-content .config-github-link {
+    color: var(--text-placeholder) !important;
+    font-size: 0.8rem;
+}
 </style>
 </head>
 <body>
@@ -522,7 +532,10 @@
         <footer class="bottom-section">
              <div class="input-wrapper">
                 <div class="textarea-container">
-                    <button class="numbers-btn" id="show-sorted-btn">Números</button>
+                    <div class="action-buttons-group">
+                        <button class="numbers-btn" id="show-sorted-btn">Números</button>
+                        <button class="numbers-btn" id="bingo-btn">Bingo!</button>
+                    </div>
                     <textarea id="multi-line-input" placeholder="Digite os números sorteados"></textarea>
                 </div>
                 <div class="bottom-controls">
@@ -618,6 +631,7 @@
                 <button id="config-cancel-btn" class="numbers-btn">Cancelar</button>
                 <button id="config-save-btn" class="numbers-btn">Salvar</button>
             </div>
+            <span class="config-github-link">https://github.com/fl4v102001/bingo/</span>
         </div>
     </div>
 
@@ -647,6 +661,7 @@
         const apiLinkInput = document.getElementById('apiUrl');
         const marquee = document.getElementById('single-line-marquee');
         const fireworksCanvas = document.getElementById('fireworks-canvas');
+        const bingoBtn = document.getElementById('bingo-btn');
         
         let typingTimer;
         const doneTypingInterval = 2000;
@@ -872,7 +887,7 @@
                 <style>
                     @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap');
                     table { width: 100%; border-collapse: collapse; text-align: center; }
-                    th, td { border: 1px solid ${cellBorderColor}; padding: 0.5rem; font-size: 1.5rem; }
+                    th, td { border: 1px solid ${cellBorderColor}; padding: 0.5rem; font-size: 3rem; }
                     th { background-color: ${headerBgColor}; color: ${headerFontColor}; font-family: 'Roboto Slab', serif; }
                     td { background-color: #fcfaff; color: #333; }
                 </style>
@@ -883,7 +898,8 @@
                     <tbody>
                         ${tableRowsHtml}
                     </tbody>
-                </table>
+                </table>    
+                <a class="github-link" href="https://github.com/fl4v102001/bingo/" target="_blank" rel="noopener">https://github.com/fl4v102001/bingo/</a>
             `;
 
             return fullHtml.replace(/\s\s+/g, ' ').trim();
@@ -1059,6 +1075,8 @@
             setupFireworks();
         });
 
+        bingoBtn.addEventListener('click', triggerBingoAnimation);
+
 
         // --- Lógica da Animação do BINGO ---
         function random(min, max) {
@@ -1094,7 +1112,7 @@
             }
             draw() {
                 f_ctx.beginPath();
-                f_ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                f_ctx.arc(this.x, this.y, 4, 0, Math.PI * 2);
                 f_ctx.fillStyle = this.color;
                 f_ctx.fill();
             }
