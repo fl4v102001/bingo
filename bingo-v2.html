@@ -461,27 +461,25 @@
             50% { border-color: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
         }
 
-        @keyframes marquee-left-pause-left {
-            0% {
-                transform: translateX(calc(100vw)); /* Garante que o texto comece totalmente fora da tela à direita */
-                opacity: 1;
-            }
-            30% {
-                transform: translateX(0%);
-                opacity: 1;
-            }
-            90% {
-                transform: translateX(0%);
-                opacity: 1;
-            }
-            100% {
-                /* Aplica apenas o fadeOut no final */
-                opacity: 0;
-            }
+    @keyframes marquee-left-pause-left {
+        0% {
+            transform: translateX(calc(100vw)); /* Garante que o texto comece totalmente fora da tela à direita */
+            opacity: 1;
         }
-        
-}
-    </style>
+        30% {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+        90% {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+        100% {
+            /* Aplica apenas o fadeOut no final */
+            opacity: 0;
+        }
+    }
+</style>
 </head>
 <body>
 
