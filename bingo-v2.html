@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BINGO - Sorteio de números - BINGO</title>
+    <style>
+        /* --- Estilos Gerais e Fontes --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Roboto+Slab:wght@700&display=swap');
+
+        /* --- Variáveis de Cor --- */
+        :root {
+            /* Tema Claro (Padrão) */
+            --bg-page: #f8f7fa;
+            --bg-container: #fcfaff;
+            --bg-input: #fff;
+            --bg-circle: #e9e9ed;
+            --circle-large-bg-color: #f71501; /* Cor específica para o fundo do círculo maior */
+            --circle-large-font-color: #ffffff; /* Cor específica para a fonte do círculo maior */
+            --text-primary: #333;
+            --text-secondary: #3d3d4e;
+            --text-label: #6c567b;
+            --text-placeholder: #b0b0b0; /* Cor unificada para placeholders */
+            --border-color: #e0dbe1; /* Cor para bordas internas */
+            --main-container-border-color: #f71501; /* Cor específica para a borda principal */
+            --shadow-color: rgba(0,0,0,0.05);
+
+            /* Cores do Brilho */
+            --primary-glow-color: #FFD700;
+            --secondary-glow-color: #FFFDE7;
+        }
+
+        :root.dark-theme {
+            /* Tema Escuro */
+            --bg-page: #121212;
+            --bg-container: #1e1e1e;
+            --bg-input: #2c2c2c;
+            --bg-circle: #333333;
+            --circle-large-bg-color: #1b0684; /* Cor específica para o fundo do círculo maior */
+            --circle-large-font-color: #ffffff; /* Cor específica para a fonte do círculo maior */
+            --text-primary: #e0e0e0;
+            --text-secondary: #f0f0f0;
+            --text-label: #adadc2;
+            --border-color: #444444; /* Cor para bordas internas */
+            --main-container-border-color: #002aff; /* Cor específica para a borda principal */
+            --shadow-color: rgba(255,255,255,0.05);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* --- Container Principal --- */
+        .main-container {
+            max-width: 1600px;
+            margin: 1rem auto; /* Alterado */
+            border: 10px solid var(--main-container-border-color); /* Borda alterada */
+            background-color: var(--bg-container);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 4rem);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        /* --- Seção Superior --- */
+        .top-section {
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            padding: 0rem 1rem;
+            box-sizing: border-box;
+            overflow: hidden; /* Required for CSS marquee effect */
+        }
+
+        /* --- Botão de Tema --- */
+        .theme-toggle-btn, .config-btn {
+            background-color: var(--bg-circle);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .theme-toggle-btn:hover, .config-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        /* --- Seletor de Cor --- */
+        .color-picker {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+        .color-picker::-webkit-color-swatch {
+            border-radius: 50%;
+            border: 2px solid var(--text-placeholder);
+        }
+        .color-picker::-moz-color-swatch {
+            border-radius: 50%;
+            border: 2px solid var(--text-placeholder);
+        }
+
+
+        /* --- Seção dos Círculos --- */
+        .circles-container {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: self-end;
+            gap: 4rem; 
+            padding: 5rem 2rem;
+            flex-grow: 1;
+            flex-wrap: wrap;
+            background-color: transparent;
+        }
+        
+        .circle-wrapper {
+            position: relative;
+        }
+
+        .circle {
+            background-color: var(--bg-circle);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-secondary);
+            font-weight: 700;
+            text-align: center;
+            overflow-wrap: break-word;
+            word-break: break-all;
+            padding: 1rem;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        
+        #circle-large {
+            width: 320px;
+            height: 320px;
+            font-size: 8.8rem;
+            box-shadow: 0 0 15px var(--secondary-glow-color), 0 0 30px var(--secondary-glow-color), 0 0 45px var(--primary-glow-color), 0 0 60px var(--primary-glow-color);
+            animation: pulse-glow-gold 0.5s infinite alternate;
+            background-color: var(--circle-large-bg-color);
+            color: var(--circle-large-font-color);
+        }
+        
+        #circle-medium, #circle-small {
+            color: var(--text-placeholder);
+        }
+
+        #circle-medium { width: 285px; height: 285px; font-size: 7.8rem; }
+        #circle-small { width: 220px; height: 220px; font-size: 6rem; }
+        
+        .floating-badge {
+            position: absolute;
+            bottom: -2rem; 
+            right: 0;
+            transform: translateX(15%);
+            background-color: transparent;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            font-family: 'Roboto Slab', serif;
+            font-weight: 700;
+            z-index: 10;
+            padding: 0;
+            box-sizing: border-box;
+            transition: color 0.3s ease;
+            line-height: 0.8; 
+        }
+        
+        #badge-large {
+            width: 100px;
+            height: 100px;
+            color: var(--circle-large-bg-color);
+            -webkit-text-stroke: 2px var(--circle-large-font-color);
+            text-stroke: 2px var(--circle-large-font-color);
+            font-size: 8rem;
+            text-shadow: 0 0 8px var(--secondary-glow-color), 0 0 12px var(--secondary-glow-color), 0 0 16px var(--primary-glow-color), 0 0 20px var(--primary-glow-color);
+        }
+
+        #badge-medium {
+            width: 70px;
+            height: 70px;
+            color: var(--bg-circle);
+            -webkit-text-stroke: 2px var(--text-placeholder);
+            text-stroke: 2px var(--text-placeholder);
+            font-size: 4.1rem;
+        }
+
+        #badge-small {
+            width: 60px;
+            height: 60px;
+            color: var(--bg-circle);
+            -webkit-text-stroke: 2px var(--text-placeholder);
+            text-stroke: 2px var(--text-placeholder);
+            font-size: 3.5rem;
+        }
+        
+        /* --- Seção de Entrada de Texto --- */
+        
+        #multi-line-input::placeholder {
+             color: var(--text-placeholder);
+        }
+
+        #single-line-marquee {
+            font-size: 4rem;      /* ou ajuste conforme necessário */
+            font-weight: 400;
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,"Segoe UI", 'Inter',  Helvetica, Arial, sans-serif;
+            white-space: nowrap;
+            line-height: 1.2;
+            padding: 0 0;
+            background: transparent;
+            border: none;
+            display: inline-block;
+        }
+        #single-line-marquee.is-animating {
+            animation: marquee-left-pause-left 25s linear;
+        }
+
+        /* --- Seção Inferior --- */
+        .bottom-section {}
+
+        .input-wrapper {
+            padding: 0rem 1rem;
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+            padding-bottom: 1rem;
+        }
+        
+        .textarea-container {
+            flex-grow: 1;
+        }
+        
+        #multi-line-input {
+            width: 100%;
+            height: 9.6rem;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            resize: vertical;
+            box-sizing: border-box;
+            font-size: 2.4rem;
+            line-height: 1.2;
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+        }
+        
+        #multi-line-input:focus {
+            outline: none;
+            border-color: var(--main-container-border-color);
+        }
+
+        .flash-success { animation: flash-success-animation 1s ease-in-out 1; }
+        .flash-error { animation: flash-error-animation 1s ease-in-out 1; }
+        
+        .bottom-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            align-items: center;
+        }
+        
+        .action-buttons-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 5px;
+        }
+
+        .numbers-btn {
+            background-color: var(--bg-circle);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .modal-content {
+            background-color: var(--bg-container);
+            color: var(--text-primary);
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 750px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-placeholder);
+        }
+        
+        .modal-table-wrapper {
+            overflow-y: auto;
+            min-height: 0;
+        }
+        
+        #sorted-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+        
+        #sorted-table th, #sorted-table td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            font-size: 2rem;
+        }
+        #sorted-table th {
+            background-color: var(--circle-large-bg-color);
+            color: var(--circle-large-font-color);
+            font-family: 'Roboto Slab', serif;
+            position: sticky;
+            top: 0;
+        }
+        #sorted-table td {
+            background-color: #fcfaff; 
+            color: #333; 
+        }
+        
+        /* Modal de Configuração */
+        #config-modal .modal-content h2 { margin-top: 0; }
+        #config-modal p { margin-bottom: 2rem; }
+        .config-row { display: flex; align-items: stretch; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .config-range-group { display: flex; align-items: center; }
+        .config-row .bingo-letter { font-size: 1.5rem; font-weight: bold; width: 30px; }
+        .config-row span { margin: 0 0.5rem; }
+        .config-row input {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+        }
+        .config-row input[type="number"] {
+             width: 40px;
+             margin-left: 1rem;
+             margin-right: 1rem;
+        }
+        .msg-input-group {
+            flex-grow: 1;
+            border-left: 1px solid var(--border-color);
+            padding-left: 1rem;
+            margin-left: 1rem;
+        }
+        .msg-input {
+            width: 100%;
+        }
+        .config-api-label { font-weight: bold; margin-top: 1rem; }
+        .modal-actions { margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem; }
+
+        .modal-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 0rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 1rem;
+            box-sizing: border-box;
+            flex-shrink: 0; 
+        }
+        
+        /* --- DESIGN RESPONSIVO --- */
+
+        /* TELAS GRANDES (3 círculos) */
+        @media (min-width: 1401px) {
+            .circles-container { padding: 1rem; margin: 1rem; justify-content: space-between; } 
+            #circle-large { width: 660px; height: 660px; font-size: 26rem; } 
+            #circle-medium { width: 340px; height: 340px; font-size: 12rem; display: flex; } 
+            #circle-small { width: 260px; height: 260px; font-size: 9rem; display: flex; } 
+            #badge-large { width: 130px; height: 130px; font-size: 15.86rem; }
+            #badge-medium { width: 110px; height: 110px; font-size: 7.5rem; }
+            #badge-small { width: 90px; height: 90px; font-size: 6rem; }
+        }
+        
+        /* TELAS MÉDIAS (2 círculos) */
+        @media (min-width: 769px) and (max-width: 1400px) {
+            .main-container { width: 95%; }
+            .circles-container { justify-content: space-evenly; }
+            #circle-large { width: 500px; height: 500px; font-size: 20rem; }
+            #circle-medium { width: 250px; height: 250px; font-size: 8rem; display: flex; }
+            .circle-wrapper:has(#circle-small) { display: none; }
+            #badge-large { width: 100px; height: 100px; font-size: 12.675rem; }
+            #badge-medium { width: 80px; height: 80px; font-size: 5rem; }
+        }
+
+        /* TELAS PEQUENAS (1 círculo) */
+        @media (max-width: 768px) {
+            .main-container { width: 95%; }
+            .circles-container { flex-direction: column; gap: 2.5rem; justify-content: center;}
+            #circle-large { width: 90vw; max-width: 400px; height: 90vw; max-height: 400px; font-size: 15vw; }
+            .circle-wrapper:has(#circle-medium), .circle-wrapper:has(#circle-small) { display: none; }
+            .input-wrapper { flex-direction: column; align-items: stretch; gap: 1.5rem; }
+            #badge-large { width: 20vw; max-width: 80px; height: 20vw; max-height: 80px; font-size: 25.35vw; max-font-size: 8.5rem; }
+        }
+        
+        /* --- Animações --- */
+        @keyframes pulse-glow-gold {
+            from {
+                box-shadow: 0 0 10px #fff9c4, 0 0 20px #fff9c4, 0 0 30px #ffecb3, 0 0 40px #ffecb3;
+            }
+            to {
+                box-shadow: 0 0 20px var(--secondary-glow-color), 0 0 35px var(--secondary-glow-color), 0 0 50px var(--primary-glow-color), 0 0 65px var(--primary-glow-color);
+            }
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        @keyframes flash-success-animation {
+            50% { border-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
+        }
+        
+        @keyframes flash-error-animation {
+            50% { border-color: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
+        }
+
+        @keyframes marquee-left-pause-left {
+            0% {
+                transform: translateX(calc(100vw)); /* Garante que o texto comece totalmente fora da tela à direita */
+                opacity: 1;
+            }
+            30% {
+                transform: translateX(0%);
+                opacity: 1;
+            }
+            90% {
+                transform: translateX(0%);
+                opacity: 1;
+            }
+            100% {
+                /* Aplica apenas o fadeOut no final */
+                opacity: 0;
+            }
+        }
+
+        @keyframes marquee-continuous-left {
+            from { transform: translateX(100vw); }
+            to   { transform: translateX(-100%); }
+        }
+
+        /* --- Animação de Fogos de Artifício --- */
+        #fireworks-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999; /* Sobre o conteúdo, mas abaixo dos modais */
+            pointer-events: none; /* Impede interação com o mouse */
+            display: none; /* Começa escondido */
+        }
+
+        #config-modal .modal-content .config-github-link {
+            color: var(--text-placeholder) !important;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="fireworks-canvas"></canvas>
+
+    <div class="main-container">
+        <!-- Seção Superior -->
+        <header class="top-section">
+            <div id="single-line-marquee"></div>
+        </header>
+
+        <!-- Seção dos Círculos -->
+        <main class="circles-container">
+            <div class="circle-wrapper">
+                <div class="circle" id="circle-large"></div>
+                <div class="floating-badge" id="badge-large"> </div>
+            </div>
+            <div class="circle-wrapper">
+                <div class="circle" id="circle-medium"></div>
+                <div class="floating-badge" id="badge-medium"> </div>
+            </div>
+            <div class="circle-wrapper">
+                <div class="circle" id="circle-small"></div>
+                <div class="floating-badge" id="badge-small"> </div>
+            </div>
+        </main>
+        
+        <!-- Seção Inferior -->
+        <footer class="bottom-section">
+             <div class="input-wrapper">
+                <div class="textarea-container">
+                    <div class="action-buttons-group">
+                        <button class="numbers-btn" id="show-sorted-btn">Números</button>
+                        <button class="numbers-btn" id="bingo-btn">Bingo!</button>
+                    </div>
+                    <textarea id="multi-line-input" placeholder="Digite os números sorteados"></textarea>
+                </div>
+                <div class="bottom-controls">
+                    <input type="color" id="border-color-picker" class="color-picker" title="Mudar cor da borda">
+                    <input type="color" id="circle-large-color-picker" class="color-picker" title="Mudar cor do fundo do círculo">
+                    <input type="color" id="circle-large-font-color-picker" class="color-picker" title="Mudar cor da fonte do círculo">
+                    <button id="config-btn" class="config-btn" title="Configurações">⚙️</button>
+                    <button id="theme-toggle" class="theme-toggle-btn">🌙</button>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Modal de Cartela -->
+    <div id="sorted-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+            <div class="modal-table-wrapper">
+                <table id="sorted-table">
+                    <thead>
+                        <tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Configuração -->
+    <div id="config-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="config-modal-close-btn" class="modal-close-btn">&times;</button>
+            <h2>Configuração</h2>
+            <p>Aqui estão as faixas de números das cartelas, as mensagens que serão mostradas no topo da tela (caso existam) e o tempo (em segundos) que devem permanecer na tela. 
+Informe também o endereço Internet já configurado para acompanhar o sorteio (opcional).</p>
+            <div class="config-row">
+                <div class="config-range-group">
+                    <span class="bingo-letter">B</span> de <input type="number" id="b_min"> a <input type="number" id="b_max">
+                </div>
+                <div class="msg-input-group">
+                    <input type="text" id="msg_1" class="modal-input msg-input" placeholder="Mensagem 1">
+                </div>
+                <div class="config-range-group">
+                    <input type="number" id="tempo_1" min="10" max="50" value="20" title="Tempo em segundos para a mensagem 1">
+                </div>
+            </div>
+            <div class="config-row">
+                 <div class="config-range-group">
+                    <span class="bingo-letter">I</span> de <input type="number" id="i_min"> a <input type="number" id="i_max">
+                </div>
+                <div class="msg-input-group">
+                    <input type="text" id="msg_2" class="modal-input msg-input" placeholder="Mensagem 2">
+                </div>
+                <div class="config-range-group">
+                    <input type="number" id="tempo_2" min="10" max="50" value="20" title="Tempo em segundos para a mensagem 2">
+                </div>
+            </div>
+            <div class="config-row">
+                <div class="config-range-group">
+                    <span class="bingo-letter">N</span> de <input type="number" id="n_min"> a <input type="number" id="n_max">
+                </div>
+                <div class="msg-input-group">
+                    <input type="text" id="msg_3" class="modal-input msg-input" placeholder="Mensagem 3">
+                </div>
+                <div class="config-range-group">
+                    <input type="number" id="tempo_3" min="10" max="50" value="20" title="Tempo em segundos para a mensagem 3">
+                </div>
+            </div>
+            <div class="config-row">
+                <div class="config-range-group">
+                    <span class="bingo-letter">G</span> de <input type="number" id="g_min"> a <input type="number" id="g_max">
+                </div>
+                <div class="msg-input-group">
+                    <input type="text" id="msg_4" class="modal-input msg-input" placeholder="Mensagem 4">
+                </div>
+                <div class="config-range-group">
+                    <input type="number" id="tempo_4" min="10" max="50" value="20" title="Tempo em segundos para a mensagem 4">
+                </div>
+            </div>
+            <div class="config-row">
+                <div class="config-range-group">
+                    <span class="bingo-letter">O</span> de <input type="number" id="o_min"> a <input type="number" id="o_max">
+                </div>
+                <div class="msg-input-group">
+                    <input type="text" id="msg_5" class="modal-input msg-input" placeholder="Mensagem 5">
+                </div>
+                <div class="config-range-group">
+                    <input type="number" id="tempo_5" min="10" max="50" value="20" title="Tempo em segundos para a mensagem 5">
+                </div>
+            </div>
+            <label class="config-api-label" for="apiUrl">API</label>
+            <input type="text" id="apiUrl" class="modal-input" placeholder="http://0.0.0.0:8000">
+            <div class="modal-actions">
+                <button id="config-cancel-btn" class="numbers-btn">Cancelar</button>
+                <button id="config-save-btn" class="numbers-btn">Salvar</button>
+            </div>
+            <span class="config-github-link">https://github.com/fl4v102001/bingo/</span>
+        </div>
+    </div>
+
+    <script>
+    // =================================================================================
+    // INÍCIO DO CÓDIGO JAVASCRIPT REFATORADO COM CLASSES
+    // =================================================================================
+
+    /**
+     * Classe BingoUI
+     * Responsabilidade: Todas as interações com o DOM (elementos HTML).
+     * Não contém lógica de jogo, apenas seleciona elementos e atualiza a tela.
+     */
+    class BingoUI {
+        constructor() {
+            this.root = document.documentElement;
+            this.mainContainer = document.querySelector('.main-container');
+            this.textArea = document.getElementById('multi-line-input');
+            
+            // Círculos e Badges
+            this.circles = {
+                large: document.getElementById('circle-large'),
+                medium: document.getElementById('circle-medium'),
+                small: document.getElementById('circle-small'),
+            };
+            this.badges = {
+                large: document.getElementById('badge-large'),
+                medium: document.getElementById('badge-medium'),
+                small: document.getElementById('badge-small'),
+            };
+
+            // Controles
+            this.themeToggleBtn = document.getElementById('theme-toggle');
+            this.borderColorPicker = document.getElementById('border-color-picker');
+            this.circleLargeColorPicker = document.getElementById('circle-large-color-picker');
+            this.circleLargeFontColorPicker = document.getElementById('circle-large-font-color-picker');
+            
+            // Botões de Ação
+            this.showSortedBtn = document.getElementById('show-sorted-btn');
+            this.bingoBtn = document.getElementById('bingo-btn');
+            this.configBtn = document.getElementById('config-btn');
+
+            // Modal de Números Sorteados
+            this.sortedModal = {
+                overlay: document.getElementById('sorted-modal'),
+                closeBtn: document.getElementById('modal-close-btn'),
+                tableBody: document.querySelector('#sorted-table tbody'),
+            };
+
+            // Modal de Configuração
+            this.configModal = {
+                overlay: document.getElementById('config-modal'),
+                closeBtn: document.getElementById('config-modal-close-btn'),
+                saveBtn: document.getElementById('config-save-btn'),
+                cancelBtn: document.getElementById('config-cancel-btn'),
+                inputs: {
+                    b_min: document.getElementById('b_min'), b_max: document.getElementById('b_max'),
+                    i_min: document.getElementById('i_min'), i_max: document.getElementById('i_max'),
+                    n_min: document.getElementById('n_min'), n_max: document.getElementById('n_max'),
+                    g_min: document.getElementById('g_min'), g_max: document.getElementById('g_max'),
+                    o_min: document.getElementById('o_min'), o_max: document.getElementById('o_max'),
+                    msg_1: document.getElementById('msg_1'), tempo_1: document.getElementById('tempo_1'),
+                    msg_2: document.getElementById('msg_2'), tempo_2: document.getElementById('tempo_2'),
+                    msg_3: document.getElementById('msg_3'), tempo_3: document.getElementById('tempo_3'),
+                    msg_4: document.getElementById('msg_4'), tempo_4: document.getElementById('tempo_4'),
+                    msg_5: document.getElementById('msg_5'), tempo_5: document.getElementById('tempo_5'),
+                    apiUrl: document.getElementById('apiUrl'),
+                }
+            };
+            
+            // Marquee e Fireworks
+            this.marquee = document.getElementById('single-line-marquee');
+            this.fireworks = {
+                canvas: document.getElementById('fireworks-canvas'),
+                ctx: null,
+                width: 0,
+                height: 0,
+                animationFrameId: null,
+                fireworks: [],
+                particles: []
+            };
+        }
+
+        updateCircles(last = '', secondLast = '', thirdLast = '') {
+            this.circles.large.textContent = last;
+            this.circles.medium.textContent = secondLast;
+            this.circles.small.textContent = thirdLast;
+        }
+
+        updateBadges(last = ' ', secondLast = ' ', thirdLast = ' ') {
+            this.badges.large.textContent = last;
+            this.badges.medium.textContent = secondLast;
+            this.badges.small.textContent = thirdLast;
+        }
+
+        applyThemeAndColors(theme, colors) {
+            this.root.classList.toggle('dark-theme', theme === 'dark');
+            this.themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+            
+            this.root.style.setProperty('--main-container-border-color', colors.border);
+            this.root.style.setProperty('--circle-large-bg-color', colors.circleBg);
+            this.root.style.setProperty('--primary-glow-color', colors.circleBg);
+            this.root.style.setProperty('--circle-large-font-color', colors.circleFont);
+            
+            this.borderColorPicker.value = colors.border;
+            this.circleLargeColorPicker.value = colors.circleBg;
+            this.circleLargeFontColorPicker.value = colors.circleFont;
+        }
+
+        flashFeedback(element, isSuccess = true, count = 1) {
+            const className = isSuccess ? 'flash-success' : 'flash-error';
+
+            const handler = () => {
+                element.classList.remove(className);
+                count--;
+                if (count >= 1) {
+                    // Força reflow para reiniciar a animação
+                    void element.offsetWidth;
+                    element.classList.add(className);
+                    element.addEventListener('animationend', handler, { once: true });
+                }
+            };
+
+            element.classList.add(className);
+            element.addEventListener('animationend', handler, { once: true });
+        }
+        
+        // --- Métodos de Modal ---
+        toggleSortedModal(show) {
+            this.sortedModal.overlay.style.display = show ? 'flex' : 'none';
+        }
+        
+        toggleConfigModal(show) {
+            this.configModal.overlay.style.display = show ? 'flex' : 'none';
+        }
+        
+        populateSortedTable(columns, maxLength) {
+            this.sortedModal.tableBody.innerHTML = ''; // Limpa tabela
+            for (let i = 0; i < maxLength; i++) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${columns.b[i] || ''}</td>
+                    <td>${columns.i[i] || ''}</td>
+                    <td>${columns.n[i] || ''}</td>
+                    <td>${columns.g[i] || ''}</td>
+                    <td>${columns.o[i] || ''}</td>
+                `;
+                this.sortedModal.tableBody.appendChild(row);
+            }
+        }
+
+        populateConfigForm(config) {
+            for (const key in config) {
+                if (this.configModal.inputs[key]) {
+                    this.configModal.inputs[key].value = config[key];
+                }
+            }
+        }
+        
+        readConfigForm() {
+            const newConfig = {};
+            for (const key in this.configModal.inputs) {
+                const input = this.configModal.inputs[key];
+                const isNumber = input.type === 'number';
+                newConfig[key] = isNumber ? (parseInt(input.value, 10) || input.defaultValue) : input.value;
+            }
+            return newConfig;
+        }
+    }
+
+    /**
+     * Classe BingoGame
+     * Responsabilidade: Gerenciar o estado do jogo (configurações, números, tema).
+     * Não interage com o DOM. Apenas processa e fornece dados.
+     */
+    class BingoGame {
+        constructor() {
+            this.words = [];
+            this.lastCommand = '';
+            this.theme = 'dark';
+            this.config = {};
+            this.isBingoActive = false;
+            this.marquee = {
+                messages: [],
+                currentIndex: 0,
+                isSetup: false
+            };
+
+            this.defaultConfig = {
+                b_min: 1, b_max: 15, msg_1: '', tempo_1: 20,
+                i_min: 16, i_max: 30, msg_2: '', tempo_2: 20,
+                n_min: 31, n_max: 45, msg_3: '', tempo_3: 20,
+                g_min: 46, g_max: 60, msg_4: '', tempo_4: 20,
+                o_min: 61, o_max: 75, msg_5: '', tempo_5: 20,
+                apiUrl: ''
+            };
+        }
+
+        load() {
+            const savedConfig = JSON.parse(localStorage.getItem('bingoConfig'));
+            this.config = { ...this.defaultConfig, ...savedConfig };
+            this.theme = localStorage.getItem('theme') || 'dark';
+            this.updateMarqueeMessages();
+        }
+
+        saveConfig(newConfig) {
+            this.config = newConfig;
+            localStorage.setItem('bingoConfig', JSON.stringify(this.config));
+            this.updateMarqueeMessages();
+        }
+
+        toggleTheme() {
+            this.theme = this.theme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', this.theme);
+            return this.theme;
+        }
+
+        saveColor(type, color) {
+            const key = `customColor_${this.theme}_${type}`;
+            localStorage.setItem(key, color);
+        }
+
+        getColors() {
+            const get = (type, fallback) => localStorage.getItem(`customColor_${this.theme}_${type}`) || fallback;
+            const defaults = this.theme === 'dark' 
+                ? { border: '#002aff', circleBg: '#1b0684', circleFont: '#ffffff' }
+                : { border: '#f71501', circleBg: '#f71501', circleFont: '#ffffff' };
+            
+            return {
+                border: get('border', defaults.border),
+                circleBg: get('circleBg', defaults.circleBg),
+                circleFont: get('circleFont', defaults.circleFont)
+            };
+        }
+
+        processInput(text) {
+            this.words = text.trim().split(/\s+/).filter(word => word.length > 0);
+            const potentialCommand = this.words[this.words.length - 1]?.toLowerCase();
+            const validCommands = ['limpar', 'resetar', 'bingo', 'parar'];
+            
+            if (validCommands.includes(potentialCommand)) {
+                this.lastCommand = potentialCommand;
+                this.words.pop(); // Remove o comando da lista de números
+                return this.lastCommand;
+            }
+            this.lastCommand = '';
+            return null;
+        }
+
+        getLastThreeNumbers() {
+            const numbersOnly = this.words.filter(word => /^\d+$/.test(word));
+            const len = numbersOnly.length;
+            return {
+                last: numbersOnly[len - 1],
+                secondLast: numbersOnly[len - 2],
+                thirdLast: numbersOnly[len - 3],
+            };
+        }
+
+        getBingoLetter(word) {
+            if (word && /^\d+$/.test(word)) {
+                const num = parseInt(word, 10);
+                if (num >= this.config.b_min && num <= this.config.b_max) return 'B';
+                if (num >= this.config.i_min && num <= this.config.i_max) return 'I';
+                if (num >= this.config.n_min && num <= this.config.n_max) return 'N';
+                if (num >= this.config.g_min && num <= this.config.g_max) return 'G';
+                if (num >= this.config.o_min && num <= this.config.o_max) return 'O';
+            }
+            return ' ';
+        }
+        
+        getSortedNumberColumns() {
+            const allNumbers = this.words.map(Number).filter(n => !isNaN(n));
+            const columns = {
+                b: allNumbers.filter(n => n >= this.config.b_min && n <= this.config.b_max).sort((a,b)=>a-b),
+                i: allNumbers.filter(n => n >= this.config.i_min && n <= this.config.i_max).sort((a,b)=>a-b),
+                n: allNumbers.filter(n => n >= this.config.n_min && n <= this.config.n_max).sort((a,b)=>a-b),
+                g: allNumbers.filter(n => n >= this.config.g_min && n <= this.config.g_max).sort((a,b)=>a-b),
+                o: allNumbers.filter(n => n >= this.config.o_min && n <= this.config.o_max).sort((a,b)=>a-b),
+            };
+            const maxLength = Math.max(15, ...Object.values(columns).map(c => c.length));
+            return { columns, maxLength };
+        }
+        
+        updateMarqueeMessages() {
+            this.marquee.messages = [
+                { msg: this.config.msg_1, tempo: this.config.tempo_1 },
+                { msg: this.config.msg_2, tempo: this.config.tempo_2 },
+                { msg: this.config.msg_3, tempo: this.config.tempo_3 },
+                { msg: this.config.msg_4, tempo: this.config.tempo_4 },
+                { msg: this.config.msg_5, tempo: this.config.tempo_5 }
+            ].filter(item => item.msg && item.msg.trim() !== '');
+            this.marquee.currentIndex = 0;
+        }
+    }
+
+    /**
+     * Classe App
+     * Responsabilidade: Orquestrar a aplicação.
+     * Cria as instâncias, configura os event listeners e conecta a UI com a lógica do jogo.
+     */
+    class App {
+        constructor() {
+            this.ui = new BingoUI();
+            this.game = new BingoGame();
+            this.typingTimer = null;
+        }
+
+        init() {
+            this.game.load();
+            this.ui.populateConfigForm(this.game.config);
+            this.ui.applyThemeAndColors(this.game.theme, this.game.getColors());
+            this.setupEventListeners();
+            this.setupFireworks();
+            this.runMarquee();
+        }
+        
+        setupEventListeners() {
+            // --- Input principal ---
+            this.ui.textArea.addEventListener('input', () => this.handleTextInput());
+
+            // --- Controles de Tema e Cor ---
+            this.ui.themeToggleBtn.addEventListener('click', () => this.handleThemeToggle());
+            this.ui.borderColorPicker.addEventListener('input', (e) => this.handleColorChange('border', e.target.value));
+            this.ui.circleLargeColorPicker.addEventListener('input', (e) => this.handleColorChange('circleBg', e.target.value));
+            this.ui.circleLargeFontColorPicker.addEventListener('input', (e) => this.handleColorChange('circleFont', e.target.value));
+
+            // --- Botões de Ação ---
+            this.ui.showSortedBtn.addEventListener('click', () => this.handleShowSorted());
+            this.ui.bingoBtn.addEventListener('click', () => this.handleBingoCommand());
+            this.ui.configBtn.addEventListener('click', () => this.ui.toggleConfigModal(true));
+
+            // --- Modal de Números Sorteados ---
+            this.ui.sortedModal.closeBtn.addEventListener('click', () => this.ui.toggleSortedModal(false));
+            this.ui.sortedModal.overlay.addEventListener('click', (e) => {
+                if (e.target === this.ui.sortedModal.overlay) this.ui.toggleSortedModal(false);
+            });
+            
+            // --- Modal de Configuração ---
+            this.ui.configModal.closeBtn.addEventListener('click', () => this.handleConfigCancel());
+            this.ui.configModal.cancelBtn.addEventListener('click', () => this.handleConfigCancel());
+            this.ui.configModal.overlay.addEventListener('click', (e) => {
+                if (e.target === this.ui.configModal.overlay) this.handleConfigCancel();
+            });
+            this.ui.configModal.saveBtn.addEventListener('click', () => this.handleConfigSave());
+
+            // --- Animações ---
+            if (this.ui.marquee && !this.game.marquee.isSetup) {
+                this.ui.marquee.addEventListener('animationend', () => this.runMarquee());
+                this.game.marquee.isSetup = true;
+            }
+        }
+        
+        // --- Handlers de Eventos ---
+
+        handleTextInput() {
+            clearTimeout(this.typingTimer);
+            const command = this.game.processInput(this.ui.textArea.value);
+            
+            if (command) {
+                this.ui.flashFeedback(this.ui.mainContainer);
+                this.handleCommand(command);
+            }
+            
+            const { last, secondLast, thirdLast } = this.game.getLastThreeNumbers();
+            this.ui.updateCircles(last, secondLast, thirdLast);
+            
+            const badgeL = this.game.getBingoLetter(last);
+            const badgeM = this.game.getBingoLetter(secondLast);
+            const badgeS = this.game.getBingoLetter(thirdLast);
+            this.ui.updateBadges(badgeL, badgeM, badgeS);
+            
+            this.typingTimer = setTimeout(() => this.exportData(), 2000);
+        }
+
+        handleCommand(command) {
+            const currentWords = this.game.words.join(' ') + ' ';
+            if (command === 'bingo') {
+                // this.triggerFireworks();
+                this.ui.textArea.value = currentWords;
+                this.handleBingoCommand();
+            } else if (command === 'limpar' || command === 'resetar') {
+                this.ui.textArea.value = '';
+                this.handleTextInput(); // Re-processa o input vazio
+            } else if (command === 'parar') {
+                this.stopFireworks();
+                this.ui.textArea.value = currentWords;
+            }
+        }
+
+        handleBingoCommand() {
+             this.ui.flashFeedback(this.ui.mainContainer);
+             if (!this.game.isBingoActive) {
+                 this.triggerFireworks();
+                 // Para a animação normal do marquee e inicia o marquee de bingo
+                 this.ui.marquee.classList.remove('is-animating');
+                 const sortedNumbers = this.game.words
+                 .map(Number) // Converte para número
+                 .filter(n => !isNaN(n)) // Garante que são números válidos
+                 .sort((a, b) => a - b) // Ordena numericamente
+                 .join('  •  '); // Junta em uma string
+                 this.ui.marquee.textContent = `Números sorteados: ${sortedNumbers}`;
+                 
+                 this.ui.marquee.style.animation = 'none'; // Reseta animação
+                 void this.ui.marquee.offsetWidth; // Força reflow
+                 this.ui.marquee.style.animation = `marquee-continuous-left 25s linear infinite`;
+                 this.game.isBingoActive = true;
+             } 
+            else {
+                 this.stopFireworks();
+                 this.game.isBingoActive = false; // Mude o estado ANTES de chamar runMarquee
+                 this.ui.marquee.style.animation = 'none'; // Para a animação de bingo
+                 // Reinicia o marquee para continuar com as mensagens normais
+                 this.game.marquee.currentIndex = 0; // Garante que o marquee recomece da primeira mensagem
+                 this.runMarquee();
+             }
+        }
+
+        handleThemeToggle() {
+            const newTheme = this.game.toggleTheme();
+            this.ui.applyThemeAndColors(newTheme, this.game.getColors());
+        }
+
+        handleColorChange(type, color) {
+            this.game.saveColor(type, color);
+            this.ui.applyThemeAndColors(this.game.theme, this.game.getColors());
+        }
+
+        handleShowSorted() {
+            const { columns, maxLength } = this.game.getSortedNumberColumns();
+            this.ui.populateSortedTable(columns, maxLength);
+            this.ui.toggleSortedModal(true);
+        }
+
+        handleConfigSave() {
+            const newConfig = this.ui.readConfigForm();
+            this.game.saveConfig(newConfig);
+            this.runMarquee(); // Reinicia o marquee com as novas mensagens
+            this.ui.toggleConfigModal(false);
+        }
+
+        handleConfigCancel() {
+            // Recarrega os dados do `game.config` para o formulário, descartando alterações
+            this.ui.populateConfigForm(this.game.config);
+            this.ui.toggleConfigModal(false);
+        }
+        
+        // --- Lógica de Exportação e Animações ---
+        
+        async exportData() {
+            // Obtém e valida a URL da API configurada
+            const apiUrl = this.game.config.apiUrl?.trim();
+            if (!apiUrl || !(apiUrl.startsWith('http://') || apiUrl.startsWith('https://'))) {
+                return;
+            }
+
+            // Monta as colunas e linhas da tabela de números sorteados
+            const { columns, maxLength } = this.game.getSortedNumberColumns();
+            let tableRowsHtml = '';
+            for (let i = 0; i < maxLength; i++) {
+                tableRowsHtml += `<tr><td>${columns.b[i]||''}</td><td>${columns.i[i]||''}</td><td>${columns.n[i]||''}</td><td>${columns.g[i]||''}</td><td>${columns.o[i]||''}</td></tr>`;
+            }
+
+            // Obtém as cores atuais para estilização da tabela
+            const colors = this.game.getColors();
+
+            // Monta o HTML completo que será enviado como payload
+            const fullHtml = `
+                <meta charset="UTF-8"><h1>${this.game.config.msg_1 || ''}</h1>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap');
+                    table{width:100%;border-collapse:collapse;text-align:center;}
+                    th,td{border:1px solid #e0dbe1;padding:0.5rem;font-size:3rem;}
+                    th{background-color:${colors.circleBg};color:${colors.circleFont};font-family:'Roboto Slab',serif;}
+                    td{background-color:#fcfaff;color:#333;}
+                </style>
+                <table>
+                    <thead>
+                        <tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>
+                    </thead>
+                    <tbody>${tableRowsHtml}</tbody>
+                </table>
+                <a href="https://github.com/fl4v102001/bingo/" target="_blank">fl4v102001/bingo</a>
+            `.replace(/\s\s+/g, ' ').trim();
+            
+            // Loga no console o destino e o payload que será enviado
+            console.log(`%c[API] Enviando dados para: ${apiUrl}/input`, 'color: blue; font-weight: bold;');
+            console.log("[API] Payload (HTML):", fullHtml);
+
+            try {
+                // Remove barras finais da URL, se houver
+                const normalizedApiUrl = apiUrl.replace(/\/+$/, '');
+                // Envia o HTML via POST para a rota /input
+                const response = await fetch(`${normalizedApiUrl}/input`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+                    body: fullHtml,
+                });
+                // Se a resposta for OK, mostra feedback de sucesso
+                if (response.ok) {
+                    console.log('%c[API] Dados enviados com sucesso!', 'color: green; font-weight: bold;');
+                    this.ui.flashFeedback(this.ui.textArea, true, 2);
+                } else {
+                    // Se a resposta for erro, lança exceção
+                    throw new Error(`API retornou um erro: ${response.status} ${response.statusText}`);
+                }
+            } catch (error) {
+                // Em caso de erro na requisição, mostra feedback de erro
+                console.error('%c[API] Erro ao enviar os dados:', 'color: red; font-weight: bold;', error);
+                this.ui.flashFeedback(this.ui.textArea, false);
+            }
+        }
+
+        runMarquee() {
+            // Se o modo BINGO estiver ativo, não executa o marquee.
+            if (this.game.isBingoActive) {
+                return;
+            }
+
+            const marqueeState = this.game.marquee;
+            if (!this.ui.marquee || marqueeState.messages.length === 0) {
+                if(this.ui.marquee) this.ui.marquee.textContent = '';
+                return;
+            }
+
+            marqueeState.currentIndex = marqueeState.currentIndex % marqueeState.messages.length;
+            const { msg, tempo } = marqueeState.messages[marqueeState.currentIndex];
+            
+            this.ui.marquee.textContent = msg;
+            this.ui.marquee.style.animation = 'none';
+            void this.ui.marquee.offsetWidth; // Trigger reflow
+            this.ui.marquee.style.animation = `marquee-left-pause-left ${tempo || 25}s linear`;
+            this.ui.marquee.classList.add('is-animating');
+
+            marqueeState.currentIndex++;
+        }
+
+        // --- Lógica dos Fogos de Artifício (Fireworks) ---
+        setupFireworks() {
+            const fw = this.ui.fireworks;
+            if (!fw.canvas) return;
+            fw.ctx = fw.canvas.getContext('2d');
+            const resize = () => {
+                fw.width = fw.canvas.width = window.innerWidth;
+                fw.height = fw.canvas.height = window.innerHeight;
+            };
+            resize();
+            window.addEventListener('resize', resize);
+        }
+
+        triggerFireworks() {
+            const fw = this.ui.fireworks;
+            if (!fw.canvas) return;
+
+            // Se a animação já estiver rodando, para e sai da função.
+            if (fw.animationFrameId) {
+                this.stopFireworks();
+                return;
+            }
+
+            // Se não estiver rodando, inicia.
+            const burstSize = 5 + Math.floor(Math.random() * 6);
+            for (let i = 0; i < burstSize; i++) {
+                setTimeout(() => fw.fireworks.push(new Firework(fw.width, fw.height)), i * 100);
+            }
+            
+            fw.canvas.style.display = 'block';
+            this.animateFireworks();
+        }
+        
+        stopFireworks() {
+            const fw = this.ui.fireworks;
+            if (fw.animationFrameId) {
+                cancelAnimationFrame(fw.animationFrameId);
+                fw.animationFrameId = null;
+            }
+            fw.fireworks.length = 0;
+            fw.particles.length = 0;
+            if (fw.ctx) fw.ctx.clearRect(0, 0, fw.width, fw.height);
+            fw.canvas.style.display = 'none';
+        }
+
+        animateFireworks() {
+            const fw = this.ui.fireworks;
+            fw.animationFrameId = requestAnimationFrame(() => this.animateFireworks());
+            fw.ctx.clearRect(0, 0, fw.width, fw.height);
+
+            if (Math.random() < 0.04) fw.fireworks.push(new Firework(fw.width, fw.height));
+
+            [...fw.fireworks, ...fw.particles].forEach((obj, i) => {
+                if (!obj.update()) {
+                    if (obj instanceof Firework) {
+                        fw.fireworks.splice(i, 1);
+                        const particleCount = 50 + Math.random() * 50;
+                        for (let j = 0; j < particleCount; j++) {
+                            fw.particles.push(new Particle(obj.x, obj.y, obj.color));
+                        }
+                    } else {
+                        fw.particles.splice(i, 1);
+                    }
+                } else {
+                    obj.draw(fw.ctx);
+                }
+            });
+        }
+    }
+    
+    // --- Classes Auxiliares para Animação ---
+    class Firework {
+        constructor(width, height) {
+            this.x = Math.random() * (width * 0.6) + (width * 0.2);
+            this.y = height;
+            this.targetY = Math.random() * (height * 0.3) + (height * 0.2);
+            this.speed = Math.random() * 2 + 3;
+            this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+        }
+        update() { this.y -= this.speed; return this.y > this.targetY; }
+        draw(ctx) {
+            ctx.beginPath(); ctx.arc(this.x, this.y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = this.color; ctx.fill();
+        }
+    }
+    class Particle {
+        constructor(x, y, color) {
+            this.x = x; this.y = y; this.color = color;
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 9 + 1;
+            this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
+            this.gravity = 0.1; this.friction = 0.98;
+            this.life = Math.random() * 20 + 140; this.initialLife = this.life;
+        }
+        update() {
+            this.life--; this.vx *= this.friction; this.vy *= this.friction;
+            this.vy += this.gravity; this.x += this.vx; this.y += this.vy;
+            return this.life > 0;
+        }
+        draw(ctx) {
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, this.life / this.initialLife);
+            ctx.beginPath(); ctx.arc(this.x, this.y, 4, 0, Math.PI * 2, false);
+            ctx.fillStyle = this.color; ctx.fill();
+            ctx.restore();
+        }
+    }
+    
+    // =================================================================================
+    // PONTO DE ENTRADA DA APLICAÇÃO
+    // =================================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = new App();
+        app.init();
+    });
+
+    </script>
+
+</body>
+</html>

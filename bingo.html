@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio de números</title>
+    <style>
+        /* --- Estilos Gerais e Fontes --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Roboto+Slab:wght@700&display=swap');
+
+        /* --- Variáveis de Cor --- */
+        :root {
+            /* Tema Claro (Padrão) */
+            --bg-page: #f8f7fa;
+            --bg-container: #fcfaff;
+            --bg-input: #fff;
+            --bg-circle: #e9e9ed;
+            --circle-large-bg-color: #f71501; /* Cor específica para o fundo do círculo maior */
+            --circle-large-font-color: #ffffff; /* Cor específica para a fonte do círculo maior */
+            --text-primary: #333;
+            --text-secondary: #3d3d4e;
+            --text-label: #6c567b;
+            --text-placeholder: #b0b0b0; /* Cor unificada para placeholders */
+            --border-color: #e0dbe1; /* Cor para bordas internas */
+            --main-container-border-color: #f71501; /* Cor específica para a borda principal */
+            --shadow-color: rgba(0,0,0,0.05);
+
+            /* Cores do Brilho */
+            --primary-glow-color: #FFD700;
+            --secondary-glow-color: #FFFDE7;
+        }
+
+        :root.dark-theme {
+            /* Tema Escuro */
+            --bg-page: #121212;
+            --bg-container: #1e1e1e;
+            --bg-input: #2c2c2c;
+            --bg-circle: #333333;
+            --circle-large-bg-color: #1b0684; /* Cor específica para o fundo do círculo maior */
+            --circle-large-font-color: #ffffff; /* Cor específica para a fonte do círculo maior */
+            --text-primary: #e0e0e0;
+            --text-secondary: #f0f0f0;
+            --text-label: #adadc2;
+            --border-color: #444444; /* Cor para bordas internas */
+            --main-container-border-color: #002aff; /* Cor específica para a borda principal */
+            --shadow-color: rgba(255,255,255,0.05);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* --- Container Principal --- */
+        .main-container {
+            max-width: 1600px;
+            margin: 1rem auto; /* Alterado */
+            border: 10px solid var(--main-container-border-color); /* Borda alterada */
+            background-color: var(--bg-container);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 4rem);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        /* --- Seção Superior --- */
+        .top-section {
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            padding: 1rem 1rem;
+            box-sizing: border-box;
+        }
+
+        /* --- Botão de Tema --- */
+        .theme-toggle-btn {
+            background-color: var(--bg-circle);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        /* --- Seletor de Cor --- */
+        .color-picker {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+        .color-picker::-webkit-color-swatch {
+            border-radius: 50%;
+            border: 2px solid var(--text-placeholder);
+        }
+        .color-picker::-moz-color-swatch {
+            border-radius: 50%;
+            border: 2px solid var(--text-placeholder);
+        }
+
+
+        /* --- Seção dos Círculos --- */
+        .circles-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 4rem; 
+            padding: 5rem 2rem;
+            flex-grow: 1;
+            flex-wrap: wrap;
+            background-color: transparent;
+        }
+        
+        .circle-wrapper {
+            position: relative;
+        }
+
+        .circle {
+            background-color: var(--bg-circle);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-secondary);
+            font-weight: 700;
+            text-align: center;
+            overflow-wrap: break-word;
+            word-break: break-all;
+            padding: 1rem;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        
+        #circle-large {
+            width: 320px;
+            height: 320px;
+            font-size: 8.8rem;
+            box-shadow: 0 0 15px var(--secondary-glow-color), 0 0 30px var(--secondary-glow-color), 0 0 45px var(--primary-glow-color), 0 0 60px var(--primary-glow-color);
+            animation: pulse-glow-gold 0.5s infinite alternate;
+            background-color: var(--circle-large-bg-color); /* Usa a variável específica */
+            color: var(--circle-large-font-color); /* Usa a variável específica */
+        }
+        
+        #circle-medium, #circle-small {
+            color: var(--text-placeholder);
+        }
+
+        #circle-medium { width: 285px; height: 285px; font-size: 7.8rem; }
+        #circle-small { width: 220px; height: 220px; font-size: 6rem; }
+        
+        .floating-badge {
+            position: absolute;
+            bottom: -2rem; /* Alinha todos na mesma base vertical */
+            right: 0;
+            transform: translateX(15%);
+            background-color: transparent;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            font-family: 'Roboto Slab', serif;
+            font-weight: 700;
+            z-index: 10;
+            padding: 0;
+            box-sizing: border-box;
+            transition: color 0.3s ease;
+            line-height: 0.8; /* Ajuda no alinhamento da base do texto */
+        }
+        
+        #badge-large {
+            width: 100px;
+            height: 100px;
+            color: var(--circle-large-bg-color);
+            -webkit-text-stroke: 2px var(--circle-large-font-color);
+            text-stroke: 2px var(--circle-large-font-color);
+            font-size: 8rem;
+            text-shadow: 0 0 8px var(--secondary-glow-color), 0 0 12px var(--secondary-glow-color), 0 0 16px var(--primary-glow-color), 0 0 20px var(--primary-glow-color);
+        }
+
+        #badge-medium {
+            width: 70px;
+            height: 70px;
+            color: var(--bg-circle);
+            -webkit-text-stroke: 2px var(--text-placeholder);
+            text-stroke: 2px var(--text-placeholder);
+            font-size: 4.1rem;
+        }
+
+        #badge-small {
+            width: 60px;
+            height: 60px;
+            color: var(--bg-circle);
+            -webkit-text-stroke: 2px var(--text-placeholder);
+            text-stroke: 2px var(--text-placeholder);
+            font-size: 3.5rem;
+        }
+        
+        #single-line-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 3rem;
+            color: var(--text-primary);
+            font-weight: 300;
+            height: 60px;
+            box-sizing: border-box;
+        }
+        
+        #single-line-input::placeholder,
+        #multi-line-input::placeholder {
+             color: var(--text-placeholder);
+        }
+
+        /* --- Seção Inferior --- */
+        .bottom-section {
+             /* border-top: 1px solid var(--border-color); */ /* Removido */
+        }
+
+        .input-wrapper {
+            padding: 0rem 1rem;
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+            padding-bottom: 1rem;
+        }
+        
+        .textarea-container {
+            flex-grow: 1;
+        }
+        
+        #multi-line-input {
+            width: 100%;
+            height: 9.6rem;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            resize: vertical;
+            box-sizing: border-box;
+            font-size: 2.4rem;
+            line-height: 1.2;
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+        }
+        
+        #multi-line-input:focus {
+            outline: none;
+            border-color: var(--main-container-border-color);
+        }
+        
+        .bottom-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: center; /* Adicionado */
+        }
+        
+        .numbers-btn {
+            background-color: var(--bg-circle);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; /* Inicia escondido */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .modal-content {
+            background-color: var(--bg-container);
+            color: var(--text-primary);
+            padding: 1rem;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 95%;
+            height: 90vh; /* Ocupa 90% da altura da tela */
+            display: flex; /* Adicionado */
+            flex-direction: column; /* Adicionado */
+            position: relative;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-placeholder);
+        }
+        
+        #sorted-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            flex-grow: 1; /* Adicionado para a tabela crescer */
+            display: flex; /* Adicionado */
+            flex-direction: column; /* Adicionado */
+        }
+        #sorted-table thead, #sorted-table tbody {
+            display: block;
+        }
+        #sorted-table tbody {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: block;
+        }
+        #sorted-table tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        #sorted-table th, #sorted-table td {
+            border: 1px solid var(--border-color);
+            padding: 0rem;
+            font-size: 2.4rem; /* Aumentado em 20% */
+        }
+        #sorted-table th {
+            background-color: var(--circle-large-bg-color);
+            color: var(--circle-large-font-color);
+            font-family: 'Roboto Slab', serif;
+        }
+        #sorted-table td {
+            background-color: #fcfaff; /* Cor de fundo do tema claro */
+            color: #333; /* Cor da fonte do tema claro */
+            height: calc(85vh / 15); /* Distribui a altura */
+        }
+        
+        /* --- DESIGN RESPONSIVO --- */
+
+        /* TELAS GRANDES (3 círculos) */
+        @media (min-width: 1401px) {
+            .circles-container { padding: 1rem; margin: 0rem 1rem; justify-content: space-between; } 
+            #circle-large { width: 660px; height: 660px; font-size: 26rem; } 
+            #circle-medium { width: 340px; height: 340px; font-size: 12rem; display: flex; } 
+            #circle-small { width: 260px; height: 260px; font-size: 9rem; display: flex; } 
+            #badge-large { width: 130px; height: 130px; font-size: 15.86rem; }
+            #badge-medium { width: 110px; height: 110px; font-size: 7.5rem; }
+            #badge-small { width: 90px; height: 90px; font-size: 6rem; }
+        }
+        
+        /* TELAS MÉDIAS (2 círculos) */
+        @media (min-width: 769px) and (max-width: 1400px) {
+            .main-container { width: 95%; }
+            .circles-container { justify-content: space-evenly; }
+            #circle-large { width: 500px; height: 500px; font-size: 20rem; }
+            #circle-medium { width: 250px; height: 250px; font-size: 8rem; display: flex; }
+            .circle-wrapper:has(#circle-small) { display: none; }
+            #badge-large { width: 100px; height: 100px; font-size: 12.675rem; }
+            #badge-medium { width: 80px; height: 80px; font-size: 5rem; }
+        }
+
+        /* TELAS PEQUENAS (1 círculo) */
+        @media (max-width: 768px) {
+            .main-container { width: 95%; }
+            .circles-container { flex-direction: column; gap: 2.5rem; justify-content: center;}
+            #circle-large { width: 90vw; max-width: 400px; height: 90vw; max-height: 400px; font-size: 15vw; }
+            .circle-wrapper:has(#circle-medium), .circle-wrapper:has(#circle-small) { display: none; }
+            .input-wrapper { flex-direction: column; align-items: stretch; gap: 1.5rem; }
+            #badge-large { width: 20vw; max-width: 80px; height: 20vw; max-height: 80px; font-size: 25.35vw; max-font-size: 8.5rem; }
+        }
+        
+        /* --- Animações --- */
+        @keyframes pulse-glow-gold {
+            from {
+                box-shadow: 0 0 10px #fff9c4, 0 0 20px #fff9c4, 0 0 30px #ffecb3, 0 0 40px #ffecb3;
+            }
+            to {
+                box-shadow: 0 0 20px var(--secondary-glow-color), 0 0 35px var(--secondary-glow-color), 0 0 50px var(--primary-glow-color), 0 0 65px var(--primary-glow-color);
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- Seção Superior -->
+        <header class="top-section">
+            <input type="text" id="single-line-input" placeholder="Digite uma mensagem importante">
+        </header>
+
+        <!-- Seção dos Círculos -->
+        <main class="circles-container">
+            <div class="circle-wrapper">
+                <div class="circle" id="circle-large"></div>
+                <div class="floating-badge" id="badge-large"> </div>
+            </div>
+            <div class="circle-wrapper">
+                <div class="circle" id="circle-medium"></div>
+                <div class="floating-badge" id="badge-medium"> </div>
+            </div>
+            <div class="circle-wrapper">
+                <div class="circle" id="circle-small"></div>
+                <div class="floating-badge" id="badge-small"> </div>
+            </div>
+        </main>
+        
+        <!-- Seção Inferior -->
+        <footer class="bottom-section">
+             <div class="input-wrapper">
+                <div class="textarea-container">
+                    <button class="numbers-btn" id="show-sorted-btn">Números</button>
+                    <textarea id="multi-line-input" placeholder="Digite os números sorteados"></textarea>
+                </div>
+                <div class="bottom-controls">
+                    <input type="color" id="border-color-picker" class="color-picker" title="Mudar cor da borda">
+                    <input type="color" id="circle-large-color-picker" class="color-picker" title="Mudar cor do fundo do círculo">
+                    <input type="color" id="circle-large-font-color-picker" class="color-picker" title="Mudar cor da fonte do círculo">
+                    <button id="theme-toggle" class="theme-toggle-btn">🌙</button>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Modal de Conteúdo Ordenado -->
+    <div id="sorted-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+            <table id="sorted-table">
+                <thead>
+                    <tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // --- Seleção de Elementos do DOM ---
+        const textArea = document.getElementById('multi-line-input');
+        const largeCircle = document.getElementById('circle-large');
+        const mediumCircle = document.getElementById('circle-medium');
+        const smallCircle = document.getElementById('circle-small');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const borderColorPicker = document.getElementById('border-color-picker');
+        const circleLargeColorPicker = document.getElementById('circle-large-color-picker');
+        const circleLargeFontColorPicker = document.getElementById('circle-large-font-color-picker');
+        const root = document.documentElement;
+        const badgeLarge = document.getElementById('badge-large');
+        const badgeMedium = document.getElementById('badge-medium');
+        const badgeSmall = document.getElementById('badge-small');
+        const showSortedBtn = document.getElementById('show-sorted-btn');
+        const sortedModal = document.getElementById('sorted-modal');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const sortedTableBody = document.querySelector('#sorted-table tbody');
+        
+        // --- Lógica dos Círculos ---
+        function getBingoLetter(word) {
+            if (word && /^\d+$/.test(word)) {
+                const num = parseInt(word, 10);
+                if (num <= 15) return 'B';
+                if (num <= 30) return 'I';
+                if (num <= 45) return 'N';
+                if (num <= 60) return 'G';
+                if (num >= 61) return 'O';
+            }
+            return ' ';
+        }
+
+        textArea.addEventListener('input', () => {
+            const words = textArea.value.trim().split(/\s+/).filter(word => word.length > 0);
+            const lastWord = words[words.length - 1] || '';
+            const secondLastWord = words[words.length - 2] || '';
+            const thirdLastWord = words[words.length - 3] || '';
+
+            largeCircle.textContent = lastWord;
+            mediumCircle.textContent = secondLastWord;
+            smallCircle.textContent = thirdLastWord;
+            
+            badgeLarge.textContent = getBingoLetter(lastWord);
+            badgeMedium.textContent = getBingoLetter(secondLastWord);
+            badgeSmall.textContent = getBingoLetter(thirdLastWord);
+        });
+
+        // --- Lógica do Tema Claro/Escuro e Cores ---
+        
+        const defaultBorderColors = { light: '#f71501', dark: '#002aff' };
+        const defaultCircleLargeBgColors = { light: '#f71501', dark: '#1b0684' };
+        const defaultCircleLargeFontColors = { light: '#ffffff', dark: '#ffffff' };
+
+        function applyThemeAndColor() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            root.classList.toggle('dark-theme', theme === 'dark');
+            themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+
+            // Aplica cor da borda
+            const borderColorKey = `customBorderColor_${theme}`;
+            const savedBorderColor = localStorage.getItem(borderColorKey);
+            const finalBorderColor = savedBorderColor || defaultBorderColors[theme];
+            root.style.setProperty('--main-container-border-color', finalBorderColor);
+            borderColorPicker.value = finalBorderColor;
+            
+            // Aplica cor do fundo do círculo maior
+            const circleBgColorKey = `customCircleLargeBgColor_${theme}`;
+            const savedCircleBgColor = localStorage.getItem(circleBgColorKey);
+            const finalCircleBgColor = savedCircleBgColor || defaultCircleLargeBgColors[theme];
+            root.style.setProperty('--circle-large-bg-color', finalCircleBgColor);
+            circleLargeColorPicker.value = finalCircleBgColor;
+            root.style.setProperty('--primary-glow-color', finalCircleBgColor);
+            
+            // Aplica cor da fonte do círculo maior
+            const fontColorKey = `customCircleLargeFontColor_${theme}`;
+            const savedFontColor = localStorage.getItem(fontColorKey);
+            const finalFontColor = savedFontColor || defaultCircleLargeFontColors[theme];
+            root.style.setProperty('--circle-large-font-color', finalFontColor);
+            circleLargeFontColorPicker.value = finalFontColor;
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            applyThemeAndColor();
+        });
+
+        borderColorPicker.addEventListener('input', (event) => {
+            const newColor = event.target.value;
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            const colorKey = `customBorderColor_${currentTheme}`;
+            
+            root.style.setProperty('--main-container-border-color', newColor);
+            localStorage.setItem(colorKey, newColor);
+        });
+        
+        circleLargeColorPicker.addEventListener('input', (event) => {
+            const newColor = event.target.value;
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            const colorKey = `customCircleLargeBgColor_${currentTheme}`;
+            
+            root.style.setProperty('--circle-large-bg-color', newColor);
+            localStorage.setItem(colorKey, newColor);
+            root.style.setProperty('--primary-glow-color', newColor);
+        });
+        
+        circleLargeFontColorPicker.addEventListener('input', (event) => {
+            const newColor = event.target.value;
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            const colorKey = `customCircleLargeFontColor_${currentTheme}`;
+            
+            root.style.setProperty('--circle-large-font-color', newColor);
+            localStorage.setItem(colorKey, newColor);
+        });
+
+        // --- Lógica do Modal ---
+        showSortedBtn.addEventListener('click', () => {
+            const items = textArea.value.trim().split(/\s+/).filter(item => item.length > 0);
+            const allNumbers = items.filter(item => !isNaN(parseFloat(item)) && isFinite(item)).map(Number);
+            
+            const b_col = allNumbers.filter(n => n >= 1 && n <= 15).sort((a,b) => a-b);
+            const i_col = allNumbers.filter(n => n >= 16 && n <= 30).sort((a,b) => a-b);
+            const n_col = allNumbers.filter(n => n >= 31 && n <= 45).sort((a,b) => a-b);
+            const g_col = allNumbers.filter(n => n >= 46 && n <= 60).sort((a,b) => a-b);
+            const o_col = allNumbers.filter(n => n >= 61 && n <= 75).sort((a,b) => a-b);
+
+            sortedTableBody.innerHTML = ''; // Limpa a tabela
+
+            for (let i = 0; i < 15; i++) {
+                const row = document.createElement('tr');
+                
+                const cellB = document.createElement('td');
+                cellB.textContent = b_col[i] || '';
+                row.appendChild(cellB);
+                
+                const cellI = document.createElement('td');
+                cellI.textContent = i_col[i] || '';
+                row.appendChild(cellI);
+                
+                const cellN = document.createElement('td');
+                cellN.textContent = n_col[i] || '';
+                row.appendChild(cellN);
+                
+                const cellG = document.createElement('td');
+                cellG.textContent = g_col[i] || '';
+                row.appendChild(cellG);
+
+                const cellO = document.createElement('td');
+                cellO.textContent = o_col[i] || '';
+                row.appendChild(cellO);
+                
+                sortedTableBody.appendChild(row);
+            }
+            
+            sortedModal.style.display = 'flex';
+        });
+
+        modalCloseBtn.addEventListener('click', () => {
+            sortedModal.style.display = 'none';
+        });
+        
+        sortedModal.addEventListener('click', (event) => {
+            if(event.target === sortedModal) {
+                sortedModal.style.display = 'none';
+            }
+        });
+
+        // Verifica as preferências salvas no carregamento da página
+        document.addEventListener('DOMContentLoaded', () => {
+            applyThemeAndColor();
+        });
+
+    </script>
+
+</body>
+</html>
