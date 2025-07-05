@@ -8,6 +8,25 @@ class AutoRefreshApp(BaseHTTPRequestHandler):
                     content = f.read()
             except FileNotFoundError:
                 content = "(file not found)"
+
+            script = '''
+
+            <p style="font-size: 1.5rem; margin-top: 1rem;">Atualizado em:${formatada}</p>
+            <script>
+                const agora = new Date();
+                const formatada = agora.toLocaleString('pt-BR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            </script>
+            '''
+
+
             html = f'''
             <html>
             <head>
@@ -15,6 +34,7 @@ class AutoRefreshApp(BaseHTTPRequestHandler):
             </head>
             <body>
                 <pre>{content}</pre>
+                {script}
             </body>
             </html>
             '''
@@ -33,7 +53,7 @@ class AutoRefreshApp(BaseHTTPRequestHandler):
         if self.path == '/input':
             with open("numeros.txt", "w") as f:
                 f.write(body)
-            self.send_response(204)
+            self.send_response(204, "Processado")
             self.send_header("Access-Control-Allow-Origin", "*")  # Permite qualquer origem
             self.end_headers()
         else:
