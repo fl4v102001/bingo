@@ -11,15 +11,10 @@ class AutoRefreshApp(BaseHTTPRequestHandler):
 
             script = '''
 
-            <p>Data e hora atual:</p>
-            <div id="dataHora" style="font-weight: bold; font-size: 1.2rem;"></div>
+            <p>Agora: <div id="dataHora"></div></p>
             <script>
                 const agora = new Date();
                 const formatada = agora.toLocaleString('pt-BR', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
                     second: '2-digit'

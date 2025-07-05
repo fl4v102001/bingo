@@ -444,7 +444,7 @@
             display: flex;
             align-items: center;
             gap: 1.5rem;
-            margin: 1.5rem 0 1rem 0;
+            margin: 1.5rem 0 0.5rem 0;
             justify-content: center;
         }
 
@@ -817,42 +817,51 @@
                 </div>
                 <div class="color-group">
                     <div class="color-dot-row">
-                        <span class="color-dot" style="background: #e53935;"></span>
-                        <span class="color-dot" style="background: #d81b60;"></span>
-                        <span class="color-dot" style="background: #8e24aa;"></span>
-                    </div>
-                    <div class="color-dot-row">
-                        <span class="color-dot" style="background: #5e35b1;"></span>
+                        <span class="color-dot" style="background: #0d47a1;"></span>
+                        <span class="color-dot" style="background: #1565c0;"></span>
                         <span class="color-dot" style="background: #1e88e5;"></span>
-                        <span class="color-dot" style="background: #039be5;"></span>
+                    </div>
+                    <div class="color-dot-row">
+                        <span class="color-dot" style="background: #42a5f5;"></span>
+                        <span class="color-dot" style="background: #90caf9;"></span>
+                        <span class="color-dot" style="background: #e3f2fd;"></span>
                     </div>
                 </div>
                 <div class="color-group">
                     <div class="color-dot-row">
-                        <span class="color-dot" style="background: #00acc1;"></span>
-                        <span class="color-dot" style="background: #00897b;"></span>
-                        <span class="color-dot" style="background: #43a047;"></span>
+                        <span class="color-dot" style="background: #0f4d1c;"></span>
+                        <span class="color-dot" style="background: #2a6a36;"></span>
+                        <span class="color-dot" style="background: #458750;"></span>
                     </div>
                     <div class="color-dot-row">
-                        <span class="color-dot" style="background: #7cb342;"></span>
-                        <span class="color-dot" style="background: #c0ca33;"></span>
-                        <span class="color-dot" style="background: #fdd835;"></span>
+                        <span class="color-dot" style="background: #60a46a;"></span>
+                        <span class="color-dot" style="background: #7bc184;"></span>
+                        <span class="color-dot" style="background: #96de9e;"></span>
                     </div>
                 </div>
                 <div class="color-group">
                     <div class="color-dot-row">
-                        <span class="color-dot" style="background: #00acc1;"></span>
-                        <span class="color-dot" style="background: #00897b;"></span>
-                        <span class="color-dot" style="background: #43a047;"></span>
+                        <span class="color-dot" style="background: #d13a3a;"></span>
+                        <span class="color-dot" style="background: #e0614a;"></span>
+                        <span class="color-dot" style="background: #ef885a;"></span>
                     </div>
                     <div class="color-dot-row">
-                        <span class="color-dot" style="background: #7cb342;"></span>
-                        <span class="color-dot" style="background: #c0ca33;"></span>
-                        <span class="color-dot" style="background: #fdd835;"></span>
+                        <span class="color-dot" style="background: #fdaf6a;"></span>
+                        <span class="color-dot" style="background: #ffd67a;"></span>
+                        <span class="color-dot" style="background: #fffca8;"></span>
                     </div>
                 </div>
             </div>
-
+            <div class="config-color-row" style="margin-top: 0.5rem; justify-content: space-around; padding: 0 5rem;">
+                <label for="paleta-1" style="cursor:pointer;">Paleta 1</label>
+                <input type="radio" id="paleta-1" name="paleta-cor" value="1" checked>
+                
+                <label for="paleta-2" style="cursor:pointer;">Paleta 2</label>
+                <input type="radio" id="paleta-2" name="paleta-cor" value="2">
+                
+                <label for="paleta-3" style="cursor:pointer;">Paleta 3</label>
+                <input type="radio" id="paleta-3" name="paleta-cor" value="3">
+            </div>
             <label class="config-api-label" for="apiUrl">API (Opcional)</label>
             <input type="text" id="apiUrl" class="modal-input" placeholder="http://127.0.0.1:8000">
 
@@ -922,6 +931,7 @@ class BingoUI {
                 msg_5: document.getElementById('msg_5'),
                 tempo_5: document.getElementById('tempo_5'),
                 apiUrl: document.getElementById('apiUrl'),
+                'paleta-cor': document.querySelectorAll('input[name="paleta-cor"]'),
             }
         };
         this.marquee = document.getElementById('single-line-marquee');
@@ -993,9 +1003,18 @@ class BingoUI {
     }
 
     populateConfigForm(config) {
-        for (const key in this.configModal.inputs) {
-            if (this.configModal.inputs[key]) {
-                this.configModal.inputs[key].value = config[key] || '';
+        for (const key in config) {
+            const inputOrNodeList = this.configModal.inputs[key];
+            if (!inputOrNodeList) continue;
+
+            if (inputOrNodeList instanceof NodeList) { // Lida com grupos de radio/checkbox
+                const valueToSelect = config[key];
+                const inputToSelect = Array.from(inputOrNodeList).find(input => input.value === valueToSelect);
+                if (inputToSelect) {
+                    inputToSelect.checked = true;
+                }
+            } else { // Lida com inputs normais
+                inputOrNodeList.value = config[key] || '';
             }
         }
     }
@@ -1003,8 +1022,13 @@ class BingoUI {
     readConfigForm() {
         const newConfig = {};
         for (const key in this.configModal.inputs) {
-            const input = this.configModal.inputs[key];
-            newConfig[key] = input.type === 'number' ? (parseInt(input.value, 10) || input.defaultValue) : input.value;
+            const inputOrNodeList = this.configModal.inputs[key];
+            if (inputOrNodeList instanceof NodeList) { // Lida com grupos de radio/checkbox
+                const checkedInput = Array.from(inputOrNodeList).find(input => input.checked);
+                if (checkedInput) newConfig[key] = checkedInput.value;
+            } else { // Lida com inputs normais
+                newConfig[key] = inputOrNodeList.type === 'number' ? (parseInt(inputOrNodeList.value, 10) || inputOrNodeList.defaultValue) : inputOrNodeList.value;
+            }
         }
         return newConfig;
     }
@@ -1035,11 +1059,26 @@ class BingoUI {
     updateDynamicDotColors(config) {
         this.dynamicColorDots.forEach((dot, idx) => {
             const key = `dotColor_${idx}`;
-            const color = config[key] || dot.style.backgroundColor;
-            dot.style.backgroundColor = color;
+            // Usa getComputedStyle para obter a cor de fundo real, que pode vir como rgb()
+            const color = config[key] || getComputedStyle(dot).backgroundColor;
+            
+            const hexColor = this._rgbToHex(color);
+
+            dot.style.backgroundColor = hexColor;
             const picker = dot.querySelector('input[type="color"]');
-            if (picker) picker.value = color;
+            if (picker) picker.value = hexColor;
         });
+    }
+
+    _rgbToHex(rgb) {
+        if (!rgb || typeof rgb !== 'string') return '#000000';
+        if (rgb.startsWith('#')) return rgb;
+
+        const result = rgb.match(/\d+/g);
+        if (!result || result.length < 3) return rgb;
+
+        const toHex = (c) => ('0' + parseInt(c, 10).toString(16)).slice(-2);
+        return `#${toHex(result[0])}${toHex(result[1])}${toHex(result[2])}`;
     }
 }
 
@@ -1057,7 +1096,8 @@ class BingoGame {
             i_min: 16, i_max: 30, msg_2: '', tempo_2: 20,
             n_min: 31, n_max: 45, msg_3: '', tempo_3: 20,
             g_min: 46, g_max: 60, msg_4: '', tempo_4: 20,
-            o_min: 61, o_max: 75, msg_5: '', tempo_5: 20, apiUrl: ''
+            o_min: 61, o_max: 75, msg_5: '', tempo_5: 20, apiUrl: '',
+            'paleta-cor': '1'
         };
     }
 
@@ -1171,6 +1211,12 @@ class App {
         this.typingTimer = null;
     }
 
+    PALETTES = {
+        '1': ['#0d47a1', '#1565c0', '#1e88e5', '#42a5f5', '#90caf9', '#e3f2fd'],
+        '2': ['#0f4d1c', '#2a6a36', '#458750', '#60a46a', '#7bc184', '#96de9e'],
+        '3': ['#d13a3a', '#e0614a', '#ef885a', '#fdaf6a', '#ffd67a', '#fffca8']
+    };
+
     init() {
         this.game.load();
         this.dynamicPickers = this.ui.createDynamicColorPickers();
@@ -1197,6 +1243,10 @@ class App {
 
         this.dynamicPickers.forEach((picker, idx) => {
             picker.addEventListener('input', (e) => this.handleConfigColorChange(`dotColor_${idx}`, e.target.value));
+        });
+
+        this.ui.configModal.inputs['paleta-cor'].forEach(radio => {
+            radio.addEventListener('change', (e) => this.handlePaletteChange(e.target.value));
         });
 
         this.ui.configBtn.addEventListener('click', () => {
@@ -1260,6 +1310,7 @@ class App {
             this.ui.textArea.value = '';
             this.toggleBingoMode(false);
             this.handleTextInput();
+            this.exportData(); // Exporta dados após limpar
         } else if (command === 'parar') {
             this.ui.textArea.value = currentWords;
             this.toggleBingoMode(false);
@@ -1286,6 +1337,19 @@ class App {
             this.ui.marquee.style.animation = 'none';
             this.runMarquee();
         }
+    }
+
+    handlePaletteChange(paletteId) {
+        const selectedPalette = this.PALETTES[paletteId];
+        if (!selectedPalette) return;
+
+        // Atualiza as 6 primeiras cores da configuração com a paleta selecionada.
+        // Isso afetará os 6 primeiros "color-dots" que podem ser usados para outras customizações.
+        for (let i = 0; i < 6; i++) {
+            const key = `dotColor_${i}`;
+            this.game.config[key] = selectedPalette[i] || '#ffffff'; // Usa branco como fallback
+        }
+        this.ui.updateDynamicDotColors(this.game.config);
     }
 
     handleThemeColorChange(type, color) {
@@ -1360,9 +1424,22 @@ handleConfigSave() {
             rows += `<tr><td>${columns.b[i] || ''}</td><td>${columns.i[i] || ''}</td><td>${columns.n[i] || ''}</td><td>${columns.g[i] || ''}</td><td>${columns.o[i] || ''}</td></tr>`;
         }
         const colors = this.game.getColors();
+        const agora = new Date();
+        const formatada = agora.toLocaleString('pt-BR', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+// Ex: sábado, 5 de julho de 2025 16:42:10
+
         const payload = `
             <meta charset="UTF-8">
-            <h1>${this.game.config.msg_1 || ''}</h1>
+            <h1 style="margin: 0 0 -1rem 0;">${this.game.config.msg_1 || ''}</h1>
+            <h1 style="margin: 0 0 -1rem 0;">${this.game.config.msg_2 || ''}</h1>
+            <h1 style="margin: 0 0 1rem 0;">${this.game.config.msg_3 || ''}</h1>
             <style>
                 @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap');
                 table { width:100%; border-collapse:collapse; text-align:center; }
@@ -1378,6 +1455,7 @@ handleConfigSave() {
                     ${rows}
                 </tbody>
             </table>
+            <p style="font-size: 1.5rem; margin-top: 1rem;">Enviado em:${formatada}</p>
             <a href="https://github.com/fl4v102001/bingo/" target="_blank">fl4v102001/bingo</a>
         `.replace(/\s\s+/g, ' ').trim();
         try {
