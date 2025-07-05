@@ -11,7 +11,7 @@ class AutoRefreshApp(BaseHTTPRequestHandler):
 
             script = '''
 
-            <p>Agora: <div id="dataHora"></div></p>
+            <div id="dataHora"></div>
             <script>
                 const agora = new Date();
                 const formatada = agora.toLocaleString('pt-BR', {
@@ -19,7 +19,7 @@ class AutoRefreshApp(BaseHTTPRequestHandler):
                     minute: '2-digit',
                     second: '2-digit'
                 });
-                document.getElementById("dataHora").textContent = formatada;
+                document.getElementById("dataHora").textContent = "Agora: " + formatada;
             </script>
             '''
 
