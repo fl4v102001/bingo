@@ -550,11 +550,15 @@
             }
         }
 
+        /* TELA MEDIA ou HD */
         @media (min-width: 769px) and (max-width: 1400px) {
             .main-container {
                 width: 95%;
             }
             .circles-container {
+                padding: 0rem 2rem;
+                margin: 0rem;
+                flex-direction: row;
                 justify-content: space-evenly;
             }
             #circle-large {
@@ -581,6 +585,31 @@
                 height: 80px;
                 font-size: 5rem;
             }
+            #multi-line-input {
+                height: 4rem;
+                padding: 0rem;
+                font-size: 1.4rem;
+            }
+            #single-line-marquee {
+                font-size: 3rem;
+            }
+            .bottom-controls {
+                display: grid;
+                grid-template-rows: auto auto;
+                grid-auto-flow: column;
+                gap: 0.5rem;
+            }
+            #config-modal .modal-content {
+                margin: 0rem 0rem 0rem 0rem;
+            }
+            .config-row {
+                margin-bottom: 0rem;
+            }
+            .modal-actions {
+                margin-top: 0rem;
+            }
+
+                
         }
 
         @media (max-width: 768px) {
