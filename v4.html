@@ -930,7 +930,8 @@ class BingoUI {
         this.sortedModal = {
             overlay: document.getElementById('sorted-modal'),
             closeBtn: document.getElementById('modal-close-btn'),
-            tableBody: document.querySelector('#sorted-table tbody')
+            tableBody: document.querySelector('#sorted-table tbody'),
+            tableHeaderRow: document.querySelector('#sorted-table thead tr')
         };
         this.configModal = {
             overlay: document.getElementById('config-modal'),
@@ -1023,13 +1024,48 @@ class BingoUI {
         modal.overlay.style.display = show ? 'flex' : 'none';
     }
 
-    populateSortedTable(columns, maxLength) {
-        this.sortedModal.tableBody.innerHTML = '';
-        for (let i = 0; i < maxLength; i++) {
-            const row = this.sortedModal.tableBody.insertRow();
-            row.innerHTML = `<td>${columns.b[i] || ''}</td><td>${columns.i[i] || ''}</td><td>${columns.n[i] || ''}</td><td>${columns.g[i] || ''}</td><td>${columns.o[i] || ''}</td>`;
+    populateSortedTable(columns) {
+        const screenHeight = window.innerHeight;
+        this.sortedModal.tableBody.innerHTML = ''; // Limpa o corpo da tabela
+
+        if (screenHeight <= 720) {
+            // Lógica para telas com altura reduzida: 10 colunas
+            this.sortedModal.tableHeaderRow.innerHTML = '<th colspan="2">B</th><th colspan="2">I</th><th colspan="2">N</th><th colspan="2">G</th><th colspan="2">O</th>';
+
+            const splitColumn = (col) => {
+                const mid = Math.ceil(col.length / 2);
+                return [col.slice(0, mid), col.slice(mid)];
+            };
+
+            const b = splitColumn(columns.b);
+            const i_cols = splitColumn(columns.i);
+            const n = splitColumn(columns.n);
+            const g = splitColumn(columns.g);
+            const o = splitColumn(columns.o);
+
+            const newMaxLength = Math.max(...Object.values({ b, i: i_cols, n, g, o }).flatMap(pair => [pair[0].length, pair[1].length]));
+
+            for (let i = 0; i < newMaxLength; i++) {
+                const row = this.sortedModal.tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${b[0][i] || ''}</td><td>${b[1][i] || ''}</td>
+                    <td>${i_cols[0][i] || ''}</td><td>${i_cols[1][i] || ''}</td>
+                    <td>${n[0][i] || ''}</td><td>${n[1][i] || ''}</td>
+                    <td>${g[0][i] || ''}</td><td>${g[1][i] || ''}</td>
+                    <td>${o[0][i] || ''}</td><td>${o[1][i] || ''}</td>
+                `;
+            }
+        } else {
+            // Lógica para telas médias e grandes (desktop): exibe como tabela BINGO
+            const maxLength = Math.max(15, ...Object.values(columns).map(c => c.length));
+            this.sortedModal.tableHeaderRow.innerHTML = '<th>B</th><th>I</th><th>N</th><th>G</th><th>O</th>';
+            for (let i = 0; i < maxLength; i++) {
+                const row = this.sortedModal.tableBody.insertRow();
+                row.innerHTML = `<td>${columns.b[i] || ''}</td><td>${columns.i[i] || ''}</td><td>${columns.n[i] || ''}</td><td>${columns.g[i] || ''}</td><td>${columns.o[i] || ''}</td>`;
+            }
         }
     }
+
 
     populateConfigForm(config) {
         for (const key in config) {
@@ -1429,8 +1465,8 @@ handleConfigSave() {
     }
 
     handleShowSorted() {
-        const { columns, maxLength } = this.game.getSortedNumberColumns();
-        this.ui.populateSortedTable(columns, maxLength);
+        const { columns } = this.game.getSortedNumberColumns();
+        this.ui.populateSortedTable(columns);
         this.ui.toggleModal(this.ui.sortedModal, true);
     }
 
