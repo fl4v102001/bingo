@@ -607,10 +607,12 @@
                 margin: 0rem 0rem 0rem 0rem;
             }
             .config-row {
-                margin-bottom: 0rem;
+                margin: 0 0;
+                padding: 0.3rem;
             }
+
             .modal-actions {
-                margin-top: 0rem;
+                margin: 0;
             }
 
                 
@@ -749,6 +751,7 @@
                     <div class="action-buttons-group">
                         <button class="numbers-btn" id="show-sorted-btn">Números</button>
                         <button class="numbers-btn" id="bingo-btn">Bingo!</button>
+                        <button class="numbers-btn" id="fullscreen-toggle-btn">↔</button>
                     </div>
                     <textarea id="multi-line-input" placeholder="Digite os números sorteados"></textarea>
                 </div>
@@ -886,14 +889,10 @@
                 </div>
             </div>
             <div class="config-color-row" style="margin-top: 0.5rem; justify-content: space-around; padding: 0 5rem;">
-                <label for="paleta-1" style="cursor:pointer;">Paleta 1</label>
-                <input type="radio" id="paleta-1" name="paleta-cor" value="1" checked>
-                
-                <label for="paleta-2" style="cursor:pointer;">Paleta 2</label>
-                <input type="radio" id="paleta-2" name="paleta-cor" value="2">
-                
-                <label for="paleta-3" style="cursor:pointer;">Paleta 3</label>
-                <input type="radio" id="paleta-3" name="paleta-cor" value="3">
+                <label style="white-space: nowra;">              </label>
+                <label>Paleta 1<input type="radio" id="paleta-1" name="paleta-cor" value="1" checked></label>
+                <label>Paleta 2<input type="radio" id="paleta-2" name="paleta-cor" value="2"></label>
+                <label>Paleta 3<input type="radio" id="paleta-3" name="paleta-cor" value="3"></label>
             </div>
             <label class="config-api-label" for="apiUrl">API (Opcional)</label>
             <input type="text" id="apiUrl" class="modal-input" placeholder="http://127.0.0.1:8000">
@@ -930,6 +929,7 @@ class BingoUI {
         this.circleLargeFontColorPicker = document.getElementById('circle-large-font-color-picker');
         this.showSortedBtn = document.getElementById('show-sorted-btn');
         this.bingoBtn = document.getElementById('bingo-btn');
+        this.fullscreenToggleBtn = document.getElementById('fullscreen-toggle-btn');
         this.configBtn = document.getElementById('config-btn');
         this.sortedModal = {
             overlay: document.getElementById('sorted-modal'),
@@ -1026,6 +1026,28 @@ class BingoUI {
 
     toggleModal(modal, show) {
         modal.overlay.style.display = show ? 'flex' : 'none';
+    }
+
+    async toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            // Entrar em modo tela cheia
+            try {
+                await document.documentElement.requestFullscreen();
+                this.fullscreenToggleBtn.textContent = 'Esc';
+            } catch (err) {
+                console.error(`Erro ao tentar entrar em tela cheia: ${err.message}`);
+                // Informa o usuário que a tela cheia precisa de interação ou foi negada.
+                alert("A entrada em tela cheia requer uma ação do usuário e pode ser negada pelo navegador. Tente novamente clicando no botão.");
+            }
+        } else {
+            // Sair do modo tela cheia
+            try {
+                await document.exitFullscreen();
+                this.fullscreenToggleBtn.textContent = 'F11';
+            } catch (err) {
+                console.error(`Erro ao tentar sair de tela cheia: ${err.message}`);
+            }
+        }
     }
 
     populateSortedTable(columns) {
@@ -1292,6 +1314,7 @@ class App {
         this.ui.updateDynamicDotColors(this.game.config);
         this.ui.populateConfigForm(this.game.config);
         this.ui.applyThemeAndColors(this.game.theme, this.game.getColors());
+        this.ui.fullscreenToggleBtn.textContent = 'F11'; // Set initial text for fullscreen button
         this.setupEventListeners();
         this.setupFireworks();
         this.runMarquee();
@@ -1304,6 +1327,15 @@ class App {
             this.handleTextInput();
         });
         this.ui.showSortedBtn.addEventListener('click', () => this.handleShowSorted());
+
+        this.ui.fullscreenToggleBtn.addEventListener('click', () => this.ui.toggleFullscreen());
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                this.ui.fullscreenToggleBtn.textContent = 'Esc';
+            } else {
+                this.ui.fullscreenToggleBtn.textContent = 'F11';
+            }
+        });
 
         this.ui.themeToggleBtn.addEventListener('click', () => this.handleThemeToggle());
         this.ui.borderColorPicker.addEventListener('input', (e) => this.handleThemeColorChange('border', e.target.value));
