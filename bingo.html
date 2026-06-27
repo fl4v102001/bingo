@@ -436,6 +436,7 @@
              <div class="input-wrapper">
                 <div class="textarea-container">
                     <button class="numbers-btn" id="show-sorted-btn">Números</button>
+                    <button class="numbers-btn" id="fullscreen-toggle-btn">F11</button>
                     <textarea id="multi-line-input" placeholder="Digite os números sorteados"></textarea>
                 </div>
                 <div class="bottom-controls">
@@ -479,6 +480,26 @@
         const sortedModal = document.getElementById('sorted-modal');
         const modalCloseBtn = document.getElementById('modal-close-btn');
         const sortedTableBody = document.querySelector('#sorted-table tbody');
+        const fullscreenToggleBtn = document.getElementById('fullscreen-toggle-btn');
+
+        async function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                try {
+                    await document.documentElement.requestFullscreen();
+                    fullscreenToggleBtn.textContent = 'Esc';
+                } catch (err) {
+                    console.error(`Erro ao tentar entrar em tela cheia: ${err.message}`);
+                    alert("A entrada em tela cheia requer uma ação do usuário e pode ser negada pelo navegador. Tente novamente clicando no botão.");
+                }
+            } else {
+                try {
+                    await document.exitFullscreen();
+                    fullscreenToggleBtn.textContent = 'F11';
+                } catch (err) {
+                    console.error(`Erro ao tentar sair de tela cheia: ${err.message}`);
+                }
+            }
+        }
         
         // --- Lógica dos Círculos ---
         function getBingoLetter(word) {
@@ -626,6 +647,15 @@
         sortedModal.addEventListener('click', (event) => {
             if(event.target === sortedModal) {
                 sortedModal.style.display = 'none';
+            }
+        });
+
+        fullscreenToggleBtn.addEventListener('click', toggleFullscreen);
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                fullscreenToggleBtn.textContent = 'Esc';
+            } else {
+                fullscreenToggleBtn.textContent = 'F11';
             }
         });
 
